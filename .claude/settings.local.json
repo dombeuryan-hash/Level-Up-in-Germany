@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls \"c:/Users/dombe/OneDrive/Bureau/Coding Projects/Level Up in Germany/public/\"_DSC*)"
+    ]
+  }
+}
