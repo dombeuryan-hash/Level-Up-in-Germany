@@ -27,10 +27,11 @@ export default async function LocaleHomePage({
         tagline={t.heroTagline}
         title={t.heroTitle}
         subtitle={t.heroSubtitle}
-        primaryButton={{ label: t.heroBtnJoin, href: joinWhatsAppUrl }}
+        stats={t.stats}
+        primaryButton={{ label: t.heroBtnJoin, href: `${base}/contact` }}
         buttons={[
           { label: t.heroBtnAttend, href: `${base}/events` },
-          { label: t.heroBtnPartner, href: `${base}/sponsor-donate` },
+          { label: t.heroBtnPartner, href: `${base}/contact` },
         ]}
         autoplayInterval={6000}
       />

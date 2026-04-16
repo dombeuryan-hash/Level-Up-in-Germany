@@ -25,15 +25,24 @@ function IconTikTok({ className }: { className?: string }) {
   );
 }
 
+function IconWhatsApp({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M20.52 3.48A11.86 11.86 0 0 0 12.07 0C5.5 0 .16 5.33.16 11.9c0 2.1.55 4.16 1.6 5.98L0 24l6.3-1.65a11.9 11.9 0 0 0 5.77 1.47h.01c6.57 0 11.91-5.34 11.91-11.91 0-3.18-1.24-6.17-3.47-8.43Zm-8.45 18.33h-.01a9.93 9.93 0 0 1-5.06-1.39l-.36-.21-3.74.98 1-3.64-.23-.38a9.9 9.9 0 0 1-1.52-5.27c0-5.47 4.45-9.92 9.92-9.92 2.65 0 5.14 1.03 7.01 2.91a9.86 9.86 0 0 1 2.91 7c0 5.47-4.45 9.92-9.92 9.92Zm5.44-7.41c-.3-.15-1.77-.88-2.04-.97-.27-.1-.46-.15-.66.15-.2.3-.76.97-.93 1.17-.17.2-.34.22-.64.07-.3-.15-1.24-.46-2.37-1.48-.87-.77-1.46-1.72-1.63-2.01-.17-.3-.02-.46.13-.61.13-.13.3-.34.45-.51.15-.17.2-.3.3-.49.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.08-.79.37-.27.3-1.04 1.01-1.04 2.46s1.07 2.86 1.22 3.05c.15.2 2.1 3.2 5.09 4.48.71.31 1.26.49 1.69.62.71.23 1.35.2 1.86.12.57-.08 1.77-.72 2.02-1.42.25-.69.25-1.29.17-1.42-.08-.12-.27-.2-.57-.35Z" />
+    </svg>
+  );
+}
+
 type Props = {
   className?: string;
   /** Icônes plus petites (footer compact) */
   compact?: boolean;
   /** Libellés accessibles par réseau (langue courante) */
-  labels: { linkedin: string; instagram: string; tiktok: string };
+  labels: { linkedin: string; instagram: string; tiktok: string; whatsapp: string };
+  whatsappHref?: string;
 };
 
-export function SocialIcons({ className = '', compact = false, labels }: Props) {
+export function SocialIcons({ className = '', compact = false, labels, whatsappHref }: Props) {
   const itemClass = compact
     ? 'inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-white/[0.08] text-white transition hover:border-accent hover:bg-accent/15 hover:text-white'
     : 'inline-flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/35 bg-white/10 text-white shadow-md transition hover:border-accent hover:bg-accent/20 hover:text-white hover:scale-105 active:scale-100';
@@ -46,6 +55,15 @@ export function SocialIcons({ className = '', compact = false, labels }: Props) 
       role="navigation"
       aria-label="Social media"
     >
+      <a
+        href={whatsappHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={itemClass}
+        aria-label={labels.whatsapp}
+      >
+        <IconWhatsApp className={iconSize} />
+      </a>
       <a
         href={SOCIAL_LINKS.linkedin}
         target="_blank"

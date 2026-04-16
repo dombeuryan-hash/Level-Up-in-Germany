@@ -625,15 +625,12 @@ export function EventsTabs({ locale, gallery2025FromDisk, gallery2026FromDisk, f
               aria-controls={`panel-${ed}`}
               id={`tab-${ed}`}
               onClick={() => setTabActive(ed)}
-              className={`flex-1 relative rounded-2xl px-6 py-4 font-semibold text-sm sm:text-base text-center transition-all duration-300 border ${
+              className={`flex-1 relative rounded-2xl px-6 py-4 font-semibold text-sm sm:text-base text-center transition-all duration-300 border focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                 active === ed
                   ? 'bg-gradient-to-br from-primary via-primary to-primary-dark text-white border-primary shadow-lg shadow-primary/20'
                   : 'bg-white text-gray-600 border-gray-200 hover:border-primary/30 hover:text-primary hover:bg-gray-50'
               }`}
             >
-              {active === ed && (
-                <span className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-accent to-primary rounded-t-2xl" />
-              )}
               {ed === '2026' ? t.tab2026 : t.tab2025}
             </button>
           ))}

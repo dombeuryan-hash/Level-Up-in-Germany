@@ -55,17 +55,20 @@ export function Footer({ locale, joinWhatsAppUrl }: { locale: Locale; joinWhatsA
   const socialLabels =
     locale === 'de'
       ? {
+          whatsapp: 'Level Up in Germany auf WhatsApp (öffnet in neuem Tab)',
           linkedin: 'Level Up in Germany auf LinkedIn (öffnet in neuem Tab)',
           instagram: 'Level Up in Germany auf Instagram (öffnet in neuem Tab)',
           tiktok: 'Level Up in Germany auf TikTok (öffnet in neuem Tab)',
         }
       : locale === 'fr'
         ? {
+            whatsapp: 'Level Up in Germany sur WhatsApp (nouvel onglet)',
             linkedin: 'Level Up in Germany sur LinkedIn (nouvel onglet)',
             instagram: 'Level Up in Germany sur Instagram (nouvel onglet)',
             tiktok: 'Level Up in Germany sur TikTok (nouvel onglet)',
           }
         : {
+            whatsapp: 'Level Up in Germany on WhatsApp (opens in a new tab)',
             linkedin: 'Level Up in Germany on LinkedIn (opens in a new tab)',
             instagram: 'Level Up in Germany on Instagram (opens in a new tab)',
             tiktok: 'Level Up in Germany on TikTok (opens in a new tab)',
@@ -97,7 +100,7 @@ export function Footer({ locale, joinWhatsAppUrl }: { locale: Locale; joinWhatsA
             <p className="mt-3 max-w-sm text-xs leading-snug text-white/65">{tagline}</p>
             <div className="mt-4 flex flex-wrap items-center gap-3">
               <p className="text-[0.6rem] font-semibold uppercase tracking-[0.16em] text-white/40">{followLabel}</p>
-              <SocialIcons compact labels={socialLabels} className="justify-start" />
+              <SocialIcons compact labels={socialLabels} whatsappHref={joinWhatsAppUrl} className="justify-start" />
             </div>
             <Link
               href={contactPageHref}

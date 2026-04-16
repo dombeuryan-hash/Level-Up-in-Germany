@@ -9,9 +9,8 @@ import { isWhoWeArePathname, localeSwitcherHref, whoWeAreHref } from '@/lib/whoW
 // Même pictogramme que la favicon (icône U / flèche, bandes orange–rouge–noir)
 import navLogoImage from '@/assets/lug-mark-nobg.png';
 
-/** Même taille sur toutes les pages (évite le saut accueil ↔ autres routes). */
-const LOGO_SIZE_CLASS =
-  'h-11 w-11 sm:h-14 sm:w-14 md:h-[3.75rem] md:w-[3.75rem]';
+/** Logo sans limitation ni effet, image normale */
+const LOGO_SIZE_CLASS = '';
 
 function Logo() {
   const [error, setError] = useState(false);
@@ -22,7 +21,7 @@ function Logo() {
       <img
         src={logoSrc}
         alt="Level Up in Germany"
-        className={`${LOGO_SIZE_CLASS} shrink-0 rounded-xl object-contain object-center ring-1 ring-black/5 shadow-sm origin-center hover:scale-105 hover:shadow-md hover:ring-accent/25 transition-[transform,box-shadow,ring-color] duration-300 ease-out ${error ? 'hidden' : ''}`}
+        className={error ? 'hidden' : ''}
         width={120}
         height={120}
         fetchPriority="high"
@@ -50,6 +49,7 @@ export function Header({ locale, joinWhatsAppUrl }: { locale: Locale; joinWhatsA
   const [menuOpen, setMenuOpen] = useState(false);
 
   const base = `/${locale}`;
+  const contactHref = `${base}/contact`;
   const getLabel = (item: (typeof navItems)[0]) => item[locale];
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -86,16 +86,14 @@ export function Header({ locale, joinWhatsAppUrl }: { locale: Locale; joinWhatsA
                 </Link>
               );
             })}
-            <a
-              href={joinWhatsAppUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href={contactHref}
               className="ml-1 px-3 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-light transition"
             >
               {locale === 'de' && 'Mitglied werden'}
               {locale === 'en' && 'Join'}
               {locale === 'fr' && 'Rejoindre'}
-            </a>
+            </Link>
             <Link
               href={`${base}/sponsor-donate`}
               className="px-3 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-dark transition"
@@ -147,17 +145,15 @@ export function Header({ locale, joinWhatsAppUrl }: { locale: Locale; joinWhatsA
                 );
               })}
               <li>
-                <a
-                  href={joinWhatsAppUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href={contactHref}
                   onClick={() => setMenuOpen(false)}
                   className="block py-2 px-3 rounded-lg bg-primary text-white font-medium"
                 >
                   {locale === 'de' && 'Mitglied werden'}
                   {locale === 'en' && 'Join'}
                   {locale === 'fr' && 'Rejoindre'}
-                </a>
+                </Link>
               </li>
               <li>
                 <Link

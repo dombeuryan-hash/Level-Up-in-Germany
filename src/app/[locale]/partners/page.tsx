@@ -1,8 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import type { Locale } from '@/i18n/config';
 import { RevealOnScroll } from '@/components/RevealOnScroll';
 import { generateMetadataForPath } from '@/lib/seo';
+import { partners2025 } from '@/content/partners';
 
 export async function generateMetadata(props: { params: Promise<{ locale: string }> }) {
   return generateMetadataForPath(props.params, '/partners');
@@ -61,11 +63,7 @@ const content: Record<Locale, {
   },
 };
 
-const partners2025 = [
-  'AAD Institut', 'Geek Institut', 'AfroGeek', 'GrowInDE',
-  'SB Salon', 'Delycious', 'Dream Village', 'CEF ImmoFinanz',
-  'SESANA', 'Believe Real Estate Formation',
-];
+
 
 export default async function PartnersPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -101,10 +99,19 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
             </div>
           </RevealOnScroll>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-            {partners2025.map((p, i) => (
-              <RevealOnScroll key={p} delayMs={i * 40}>
-                <div className="group h-20 sm:h-24 rounded-2xl border border-gray-100 bg-white shadow-sm flex items-center justify-center px-4 text-sm font-semibold text-gray-700 text-center transition-all duration-300 hover:border-accent/40 hover:shadow-md hover:text-primary card-hover-lift">
-                  {p}
+            {partners2025.map((partner, i) => (
+              <RevealOnScroll key={partner.name} delayMs={i * 40}>
+                <div
+                  className={`group h-20 sm:h-24 rounded-2xl border border-gray-100 bg-white shadow-sm flex items-center justify-center px-4 transition-all duration-300 hover:border-accent/40 hover:shadow-md card-hover-lift overflow-hidden ${i === 0 ? 'bg-white border-2 border-accent/60' : ''}`}
+                >
+                  <Image
+                    src={partner.logo}
+                    alt={partner.name}
+                    width={180}
+                    height={90}
+                    className={`max-h-24 w-auto object-contain ${i === 0 ? 'bg-white p-2 rounded-lg' : ''}`}
+                    priority={i < 3}
+                  />
                 </div>
               </RevealOnScroll>
             ))}
@@ -129,7 +136,7 @@ export default async function PartnersPage({ params }: { params: Promise<{ local
               <h2 className="text-4xl sm:text-5xl font-display font-semibold text-white leading-snug text-balance mb-6">{t.becomeTitle}</h2>
               <p className="text-base sm:text-lg text-white/65 leading-relaxed mb-8">{t.becomeBody}</p>
               <Link
-                href={`/${loc}/sponsor-donate`}
+                href={`/${loc}/contact`}
                 className="inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-brand-dark shadow-lg hover:bg-accent-light hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
               >
                 {t.cta} →

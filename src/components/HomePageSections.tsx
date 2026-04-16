@@ -297,14 +297,12 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
             <h2 className="text-3xl sm:text-4xl font-bold text-brand-dark text-balance">{t.ctaBandTitle}</h2>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">{t.ctaBandSubtitle}</p>
             <div className="mt-10 flex flex-wrap justify-center gap-3 sm:gap-4">
-              <a
-                href={joinWhatsAppUrl}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href={`${base}/contact`}
                 className="inline-flex min-w-[180px] justify-center items-center rounded-full bg-primary px-6 py-3.5 text-white font-semibold shadow-lg shadow-primary/25 hover:bg-primary-light hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
               >
                 {t.ctaJoin}
-              </a>
+              </Link>
               <Link
                 href={whoWeAreHref(locale)}
                 className="inline-flex min-w-[180px] justify-center items-center rounded-full border-2 border-primary bg-white px-6 py-3.5 text-primary font-semibold hover:bg-primary/5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
@@ -312,7 +310,7 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
                 {t.ctaMentor}
               </Link>
               <Link
-                href={`${base}/partners`}
+                href={`${base}/contact`}
                 className="inline-flex min-w-[180px] justify-center items-center rounded-full bg-brand-dark px-6 py-3.5 text-white font-semibold hover:bg-black hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
               >
                 {t.ctaPartner}
