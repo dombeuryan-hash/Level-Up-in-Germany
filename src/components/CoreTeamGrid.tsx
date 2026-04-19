@@ -154,13 +154,13 @@ export function CoreTeamGrid({ members, locale }: Props) {
 
                 {/* Bio */}
                 <p className="text-sm sm:text-base text-gray-600 leading-relaxed italic">
-                  {('bio' in active && (active as { bio?: Record<Locale, string> }).bio?.[locale]) || bioPlaceholder[locale]}
+                  {active.bio?.[locale] || bioPlaceholder[locale]}
                 </p>
 
-                {/* Social links — placeholder until filled */}
-                {'linkedin' in active && (active as { linkedin?: string }).linkedin && (
+                {/* LinkedIn */}
+                {active.linkedin && (
                   <a
-                    href={(active as { linkedin?: string }).linkedin}
+                    href={active.linkedin}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="mt-6 inline-flex items-center gap-2 text-xs font-semibold text-primary border border-primary/30 rounded-full px-4 py-2 hover:bg-primary hover:text-white transition-all duration-200"

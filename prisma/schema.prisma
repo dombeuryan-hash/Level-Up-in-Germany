@@ -45,3 +45,28 @@ model BlogPost {
 
   @@map("blog_posts")
 }
+
+model TeamMember {
+  id       String  @id @default(uuid())
+  name     String  @unique
+  bioDe    String? @default("")
+  bioEn    String? @default("")
+  bioFr    String? @default("")
+  linkedin String? @default("")
+  imageUrl String? @default("")
+
+  @@map("team_members")
+}
+
+model Media {
+  id        String   @id @default(uuid())
+  filename  String
+  url       String
+  altText   String?  @default("")
+  category  String   @default("general")
+  size      Int?
+  mimeType  String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("media_files")
+}

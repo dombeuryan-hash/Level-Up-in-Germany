@@ -7,6 +7,8 @@ export type CoreTeamMember = {
   image: string;
   name: string;
   role: { de: string; en: string; fr: string };
+  bio?: { de: string; en: string; fr: string };
+  linkedin?: string;
 };
 
 export const CORE_TEAM_MEMBERS: CoreTeamMember[] = [

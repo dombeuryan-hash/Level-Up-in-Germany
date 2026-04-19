@@ -5,6 +5,7 @@ import type { Locale } from '@/i18n/config';
 import { homeContent } from '@/content/home';
 import { getWhatsAppJoinUrl } from '@/config/whatsapp';
 import { generateMetadataForPath } from '@/lib/seo';
+import { prisma } from '@/lib/prisma';
 
 export async function generateMetadata(props: { params: Promise<{ locale: string }> }) {
   return generateMetadataForPath(props.params, '');
@@ -21,9 +22,21 @@ export default async function LocaleHomePage({
   const base = `/${loc}`;
   const joinWhatsAppUrl = getWhatsAppJoinUrl(loc);
 
+  let heroImages: string[] = [];
+  try {
+    const rows = await prisma.media.findMany({
+      where: { category: 'hero' },
+      orderBy: { createdAt: 'asc' },
+    });
+    heroImages = rows.map((r) => r.url);
+  } catch {
+    // DB not available — HeroCarousel will use its built-in fallback
+  }
+
   return (
     <>
       <HeroCarousel
+        images={heroImages}
         tagline={t.heroTagline}
         title={t.heroTitle}
         subtitle={t.heroSubtitle}

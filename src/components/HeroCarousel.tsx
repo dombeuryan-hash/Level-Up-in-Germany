@@ -4,17 +4,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-interface HeroCarouselProps {
-  title?: string;
-  tagline?: string;
-  subtitle?: string;
-  autoplayInterval?: number;
-  primaryButton?: { label: string; href: string };
-  buttons?: { label: string; href: string }[];
-  stats?: { value: number; suffix: string; label: string }[];
-}
-
-const images = [
+const FALLBACK_IMAGES = [
   '/hero-pic/leveluper1.jpg',
   '/hero-pic/leveluper2.jpg',
   '/hero-pic/leveluper5.jpg',
@@ -26,6 +16,17 @@ const images = [
   '/hero-pic/_DSC9293.JPG',
 ];
 
+interface HeroCarouselProps {
+  title?: string;
+  tagline?: string;
+  subtitle?: string;
+  autoplayInterval?: number;
+  primaryButton?: { label: string; href: string };
+  buttons?: { label: string; href: string }[];
+  stats?: { value: number; suffix: string; label: string }[];
+  images?: string[];
+}
+
 export default function HeroCarousel({
   title,
   tagline,
@@ -33,7 +34,10 @@ export default function HeroCarousel({
   autoplayInterval = 4000,
   primaryButton,
   buttons = [],
+  images: imagesProp,
 }: HeroCarouselProps) {
+  const images = imagesProp && imagesProp.length > 0 ? imagesProp : FALLBACK_IMAGES;
+
   const [current, setCurrent] = useState(0);
   const [leaving, setLeaving] = useState<number | null>(null);
   const [dir, setDir] = useState<'next' | 'prev'>('next');
@@ -47,7 +51,7 @@ export default function HeroCarousel({
         d === 'next' ? (c + 1) % images.length : (c - 1 + images.length) % images.length,
       );
     },
-    [current],
+    [current, images.length],
   );
 
   /* autoplay */
