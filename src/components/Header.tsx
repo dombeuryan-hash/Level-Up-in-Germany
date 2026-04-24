@@ -18,15 +18,23 @@ function Logo() {
 
   return (
     <>
-      <img
-        src={logoSrc}
-        alt="Level Up in Germany"
-        className={error ? 'hidden' : ''}
-        width={120}
-        height={120}
-        fetchPriority="high"
-        onError={() => setError(true)}
-      />
+      <span className="relative inline-flex items-center justify-center">
+        {/* Soft radial glow behind the logo */}
+        <span
+          className="pointer-events-none absolute inset-0 rounded-full blur-xl opacity-40"
+          style={{ background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.85) 0%, transparent 70%)' }}
+          aria-hidden
+        />
+        <img
+          src={logoSrc}
+          alt="Level Up in Germany"
+          className={`relative ${error ? 'hidden' : ''}`}
+          width={120}
+          height={120}
+          fetchPriority="high"
+          onError={() => setError(true)}
+        />
+      </span>
       {error && (
         <span className="text-primary font-bold text-lg sm:text-xl whitespace-nowrap">
           Level Up in Germany

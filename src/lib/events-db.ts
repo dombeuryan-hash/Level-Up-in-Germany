@@ -140,6 +140,7 @@ export type EventFormPayload = {
   scheduleItems: Array<
     EventFormRelationItem & {
       timeLabel: string;
+      blockType: string;
       translations: LocaleRecord<EventScheduleItemTranslation>;
     }
   >;
@@ -165,6 +166,7 @@ export type EventFormPayload = {
     EventFormRelationItem & {
       url: string;
       kind: string;
+      isVisible: boolean;
       translations: LocaleRecord<EventDocumentTranslation>;
     }
   >;
@@ -238,10 +240,16 @@ function bool(value: unknown, fallback = false): boolean {
 
 function normalizeStatus(value: unknown): string {
   const normalized = text(value).toLowerCase();
-  if (normalized === 'published' || normalized === 'draft' || normalized === 'archived' || normalized === 'upcoming') {
+  if (['published', 'draft', 'archived', 'upcoming', 'finished'].includes(normalized)) {
     return normalized;
   }
   return 'draft';
+}
+
+function normalizeBlockType(value: unknown): string {
+  const valid = ['anchoring', 'morning', 'noon', 'afternoon', 'closing'];
+  const normalized = text(value).toLowerCase();
+  return valid.includes(normalized) ? normalized : 'morning';
 }
 
 function normalizeOrganizationKind(value: unknown): string {
@@ -461,6 +469,7 @@ export function normalizeEventPayload(input: unknown): EventFormPayload {
       id: text(item.id) || undefined,
       sortOrder: integer(item.sortOrder, index),
       timeLabel: text(item.timeLabel),
+      blockType: normalizeBlockType(item.blockType),
       translations: normalizeScheduleItemTranslations(item.translations, item),
     })).filter(
       (item) =>
@@ -490,6 +499,7 @@ export function normalizeEventPayload(input: unknown): EventFormPayload {
       sortOrder: integer(item.sortOrder, index),
       url: text(item.url),
       kind: normalizeDocumentKind(item.kind),
+      isVisible: bool(item.isVisible, true),
       translations: normalizeDocumentTranslations(item.translations, item),
     })).filter((item) => item.url),
   };
@@ -709,6 +719,7 @@ async function syncSchedule(tx: Prisma.TransactionClient, eventId: string, paylo
         sectionId,
         startTime,
         endTime,
+        blockType: item.blockType ?? 'morning',
         sortOrder: item.sortOrder,
         translations: {
           create: LOCALE_LIST.map((locale) => ({
@@ -849,6 +860,7 @@ async function syncDocuments(tx: Prisma.TransactionClient, eventId: string, payl
         type: documentTypeFromKind(item.kind),
         url: item.url,
         sortOrder: item.sortOrder,
+        isVisible: item.isVisible,
         translations: {
           create: LOCALE_LIST.map((locale) => ({
             locale,
@@ -1007,6 +1019,7 @@ export function serializeEventForForm(event: EventWithRelations): EventFormPaylo
       id: item.id,
       sortOrder: item.sortOrder,
       timeLabel: joinTimeLabel(item.startTime, item.endTime),
+      blockType: item.blockType ?? 'morning',
       translations: createLocaleRecord((locale) => localizedScheduleItem(item, locale)),
     })),
     speakers: event.eventSpeakers.map((link) => ({
@@ -1034,23 +1047,59 @@ export function serializeEventForForm(event: EventWithRelations): EventFormPaylo
       sortOrder: item.sortOrder,
       url: item.url,
       kind: documentKindFromType(item.type),
+      isVisible: item.isVisible,
       translations: createLocaleRecord((locale) => localizedDocument(item, locale)),
     })),
   };
 }
 
+const BLOCK_ORDER = ['anchoring', 'morning', 'noon', 'afternoon', 'closing'] as const;
+const BLOCK_LABELS: Record<string, Record<Locale, string>> = {
+  anchoring: { fr: 'Ouverture de la journée', en: 'Opening',   de: 'Eröffnung'  },
+  morning:   { fr: 'Matinée',                 en: 'Morning',   de: 'Vormittag'  },
+  noon:      { fr: 'Midi',                    en: 'Midday',    de: 'Mittag'     },
+  afternoon: { fr: 'Après-midi',              en: 'Afternoon', de: 'Nachmittag' },
+  closing:   { fr: 'Clôture',                 en: 'Closing',   de: 'Abschluss'  },
+};
+
 export function mapEventToEventData(event: EventWithRelations, locale: Locale): EventData {
   const form = serializeEventForForm(event);
   const content = localizedEventContent(form.content, locale);
-  const summaryPdf = form.documents.find((item) => item.kind === 'summary_pdf');
   const isUpcoming = event.status === 'upcoming';
-  const publicProgramme = isUpcoming
-    ? []
-    : form.scheduleItems.map((item) => ({
-        time: item.timeLabel,
-        title: item.translations[locale].title || firstNonEmpty(LOCALE_LIST.map((key) => item.translations[key].title)),
-        desc: item.translations[locale].subtitle || firstNonEmpty(LOCALE_LIST.map((key) => item.translations[key].subtitle)) || undefined,
-      }));
+  const isPublishedOrFinished = event.status === 'published' || event.status === 'finished';
+
+  // Programme: hidden for upcoming events
+  const publicScheduleItems = isUpcoming ? [] : form.scheduleItems;
+
+  const publicProgramme = publicScheduleItems.map((item) => ({
+    time: item.timeLabel,
+    title: item.translations[locale].title || firstNonEmpty(LOCALE_LIST.map((key) => item.translations[key].title)),
+    desc: item.translations[locale].subtitle || firstNonEmpty(LOCALE_LIST.map((key) => item.translations[key].subtitle)) || undefined,
+  }));
+
+  // Group schedule items by blockType for visual timeline
+  const blockMap = new Map<string, typeof publicScheduleItems>();
+  for (const item of publicScheduleItems) {
+    const bt = item.blockType || 'morning';
+    if (!blockMap.has(bt)) blockMap.set(bt, []);
+    blockMap.get(bt)!.push(item);
+  }
+  const programmeBlocks = BLOCK_ORDER.filter((bt) => blockMap.has(bt)).map((bt) => ({
+    heading: BLOCK_LABELS[bt]?.[locale] ?? bt,
+    items: blockMap.get(bt)!.map((item) => ({
+      time: item.timeLabel,
+      title: item.translations[locale].title || firstNonEmpty(LOCALE_LIST.map((key) => item.translations[key].title)),
+      desc: item.translations[locale].subtitle || firstNonEmpty(LOCALE_LIST.map((key) => item.translations[key].subtitle)) || undefined,
+    })),
+  }));
+
+  // Edition book: only for published/finished, only if isVisible=true on the document
+  const editionBook = isPublishedOrFinished
+    ? form.documents.find((item) => item.kind === 'summary_pdf' && item.isVisible)
+    : undefined;
+
+  // Price: never shown for upcoming, published, or finished events
+  const shouldShowPrice = event.status === 'draft' && form.showPrice;
 
   return {
     theme: content.theme || undefined,
@@ -1058,12 +1107,13 @@ export function mapEventToEventData(event: EventWithRelations, locale: Locale): 
     timeRange: content.timeRange || undefined,
     programmeTitle: isUpcoming ? undefined : content.programmeTitle || undefined,
     programmeSubtitle: isUpcoming ? undefined : content.programmeSubtitle || undefined,
-    showPrice: form.showPrice,
+    showPrice: shouldShowPrice,
     priceBlurred: form.priceBlurred,
     price: content.price || undefined,
     heroBackgroundImage: form.heroBackgroundImage || undefined,
     audience: content.audience || undefined,
     programme: publicProgramme,
+    programmeBlocks: programmeBlocks.length > 0 ? programmeBlocks : undefined,
     speakers: form.speakers.map((item) => ({
       name: item.name,
       role: item.translations[locale].profession || firstNonEmpty(LOCALE_LIST.map((key) => item.translations[key].profession)),
@@ -1089,7 +1139,7 @@ export function mapEventToEventData(event: EventWithRelations, locale: Locale): 
     gallery: form.gallery.map((item) => item.url),
     galleryIntro: content.galleryIntro || undefined,
     videos: [],
-    firstEditionBookUrl: summaryPdf?.url,
+    firstEditionBookUrl: editionBook?.url,
   };
 }
 

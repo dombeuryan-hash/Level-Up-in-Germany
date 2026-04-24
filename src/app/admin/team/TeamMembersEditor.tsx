@@ -177,12 +177,12 @@ export function TeamMembersEditor({ initialData }: Props) {
 
           return (
             <div key={data.id} className="overflow-hidden rounded-2xl border border-white/8 bg-white/3">
-              <div className="p-5 space-y-4">
+              <div className="p-4 space-y-3">
 
                 {/* Header: photo + name + save */}
-                <div className="flex items-start gap-4">
+                <div className="flex items-start gap-3">
                   {/* Current photo preview */}
-                  <div className="relative w-14 h-18 shrink-0 rounded-xl overflow-hidden bg-gray-900 border border-white/10">
+                  <div className="relative w-12 h-16 shrink-0 rounded-xl overflow-hidden bg-gray-900 border border-white/10">
                     <img
                       src={currentImage}
                       alt={data.name || 'Nouveau membre'}
@@ -266,18 +266,32 @@ export function TeamMembersEditor({ initialData }: Props) {
                   defaultCategory="team"
                 />
 
-                {/* Role input */}
-                <div>
-                  <label className="block text-[10px] font-semibold uppercase tracking-wider text-white/30 mb-1">
-                    Rôle ({LANG_LABELS[activeLang]})
-                  </label>
-                  <input
-                    type="text"
-                    value={data[roleField]}
-                    onChange={(e) => update(data.id, roleField, e.target.value)}
-                    placeholder={`Rôle en ${LANG_LABELS[activeLang]}…`}
-                    className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/40 transition-all"
-                  />
+                {/* Role + LinkedIn in one row */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-white/30 mb-1">
+                      Rôle ({LANG_LABELS[activeLang]})
+                    </label>
+                    <input
+                      type="text"
+                      value={data[roleField]}
+                      onChange={(e) => update(data.id, roleField, e.target.value)}
+                      placeholder={`Rôle en ${LANG_LABELS[activeLang]}…`}
+                      className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/40 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold uppercase tracking-wider text-white/30 mb-1">
+                      Lien LinkedIn
+                    </label>
+                    <input
+                      type="url"
+                      value={data.linkedin}
+                      onChange={(e) => update(data.id, 'linkedin', e.target.value)}
+                      placeholder="https://linkedin.com/in/…"
+                      className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/40 transition-all"
+                    />
+                  </div>
                 </div>
 
                 {/* Bio textarea */}
@@ -288,23 +302,9 @@ export function TeamMembersEditor({ initialData }: Props) {
                   <textarea
                     value={data[bioField]}
                     onChange={(e) => update(data.id, bioField, e.target.value)}
-                    rows={3}
+                    rows={2}
                     placeholder={`Biographie en ${LANG_LABELS[activeLang]}…`}
                     className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder-white/20 resize-none focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/40 transition-all"
-                  />
-                </div>
-
-                {/* LinkedIn */}
-                <div>
-                  <label className="block text-[10px] font-semibold uppercase tracking-wider text-white/30 mb-1">
-                    Lien LinkedIn
-                  </label>
-                  <input
-                    type="url"
-                    value={data.linkedin}
-                    onChange={(e) => update(data.id, 'linkedin', e.target.value)}
-                    placeholder="https://linkedin.com/in/…"
-                    className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 text-sm text-white placeholder-white/20 focus:outline-none focus:ring-1 focus:ring-primary/50 focus:border-primary/40 transition-all"
                   />
                 </div>
 

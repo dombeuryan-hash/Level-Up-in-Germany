@@ -50,6 +50,15 @@ const navItems = [
     ),
   },
   {
+    href: '/admin/communication',
+    label: 'Communication',
+    icon: (
+      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13 16h-1v-4h-1m1-4h.01M21 12A9 9 0 113 12a9 9 0 0118 0z" />
+      </svg>
+    ),
+  },
+  {
     href: '/admin/team',
     label: 'Équipe',
     icon: (

@@ -81,17 +81,7 @@ export async function EventsLanding({ locale, focusEdition }: Props) {
             event2026Data={event2026 ? mapEventToEventData(event2026, locale) : undefined}
           />
 
-          <div className="mt-16 pt-8 border-t border-gray-200 text-center">
-            <Link
-              href={`${base}/events/archives`}
-              className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-white px-5 py-2.5 text-sm font-semibold text-primary shadow-sm transition hover:bg-primary hover:text-white hover:border-primary"
-            >
-              {t.archivesLink}
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
+
         </div>
       </section>
 

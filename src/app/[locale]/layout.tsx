@@ -5,6 +5,7 @@ import { getWhatsAppJoinUrl } from '@/config/whatsapp';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { CookieBanner } from '@/components/CookieBanner';
+import { EventCommunicationPopupGate } from '@/components/EventCommunicationPopupGate';
 import { ScrollToHash } from '@/components/ScrollToHash';
 import { JsonLdSite } from '@/components/JsonLdSite';
 import { DocumentLang } from '@/components/DocumentLang';
@@ -43,6 +44,7 @@ export default async function LocaleLayout({
       <Header locale={validLocale} joinWhatsAppUrl={joinWhatsAppUrl} />
       <main className="flex-1 w-full pt-16 sm:pt-20 md:pt-[5.5rem]">{children}</main>
       <Footer locale={validLocale} joinWhatsAppUrl={joinWhatsAppUrl} />
+      <EventCommunicationPopupGate locale={validLocale} />
       <CookieBanner locale={validLocale} />
     </div>
   );

@@ -82,6 +82,7 @@ function createEmptyScheduleItem(sortOrder: number): ScheduleItem {
   return {
     sortOrder,
     timeLabel: '',
+    blockType: 'morning',
     translations: createLocaleRecord(emptyScheduleTranslation),
   };
 }
@@ -111,6 +112,7 @@ function createEmptyDocument(sortOrder: number): DocumentItem {
     sortOrder,
     url: '',
     kind: 'summary_pdf',
+    isVisible: true,
     translations: createLocaleRecord(emptyDocumentTranslation),
   };
 }
@@ -164,10 +166,39 @@ type RepeaterProps<T> = {
   items: T[];
   onAdd: () => void;
   onRemove: (index: number) => void;
+  enableDragDrop?: boolean;
+  onReorder?: (fromIndex: number, toIndex: number) => void;
   renderItem: (item: T, index: number) => ReactNode;
 };
 
-function Repeater<T>({ title, description, items, onAdd, onRemove, renderItem }: RepeaterProps<T>) {
+function Repeater<T>({
+  title,
+  description,
+  items,
+  onAdd,
+  onRemove,
+  enableDragDrop = false,
+  onReorder,
+  renderItem,
+}: RepeaterProps<T>) {
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [overIndex, setOverIndex] = useState<number | null>(null);
+
+  function resetDragState() {
+    setDraggedIndex(null);
+    setOverIndex(null);
+  }
+
+  function handleDrop(targetIndex: number) {
+    if (!enableDragDrop || !onReorder || draggedIndex === null || draggedIndex === targetIndex) {
+      resetDragState();
+      return;
+    }
+
+    onReorder(draggedIndex, targetIndex);
+    resetDragState();
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4">
@@ -182,9 +213,45 @@ function Repeater<T>({ title, description, items, onAdd, onRemove, renderItem }:
 
       <div className="space-y-3">
         {items.map((item, index) => (
-          <div key={index} className="rounded-2xl border border-white/10 bg-black/10 p-4">
+          <div
+            key={index}
+            onDragOver={(e) => {
+              if (!enableDragDrop) return;
+              e.preventDefault();
+              setOverIndex(index);
+            }}
+            onDrop={(e) => {
+              if (!enableDragDrop) return;
+              e.preventDefault();
+              handleDrop(index);
+            }}
+            onDragLeave={() => {
+              if (!enableDragDrop) return;
+              setOverIndex((current) => (current === index ? null : current));
+            }}
+            className={`rounded-2xl border bg-black/10 p-4 transition ${
+              overIndex === index ? 'border-primary/40 ring-1 ring-primary/30' : 'border-white/10'
+            }`}
+          >
             <div className="mb-4 flex items-center justify-between gap-4">
-              <span className="text-xs font-semibold uppercase tracking-[0.25em] text-white/40">Élément {index + 1}</span>
+              <div className="flex items-center gap-3">
+                {enableDragDrop ? (
+                  <button
+                    type="button"
+                    draggable
+                    onDragStart={() => setDraggedIndex(index)}
+                    onDragEnd={resetDragState}
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-white/60 hover:border-primary/40 hover:text-white cursor-grab active:cursor-grabbing"
+                    title="Glisser pour réordonner"
+                    aria-label="Glisser pour réordonner"
+                  >
+                    <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
+                      <path d="M7 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm0 4.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm0 4.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM13 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm0 4.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm0 4.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z" />
+                    </svg>
+                  </button>
+                ) : null}
+                <span className="text-xs font-semibold uppercase tracking-[0.25em] text-white/40">Élément {index + 1}</span>
+              </div>
               <button type="button" onClick={() => onRemove(index)} className="rounded-lg border border-red-500/20 px-2.5 py-1.5 text-xs font-medium text-red-300 hover:bg-red-500/10">
                 Supprimer
               </button>
@@ -353,6 +420,28 @@ export default function AdminEventEditor({ event }: { event?: EditorEvent }) {
     });
   }
 
+  function reorderList<K extends 'scheduleItems' | 'speakers' | 'organizations' | 'gallery' | 'documents'>(
+    field: K,
+    fromIndex: number,
+    toIndex: number,
+  ) {
+    setFormData((prev) => {
+      const list = [...prev[field]];
+      const [moved] = list.splice(fromIndex, 1);
+      list.splice(toIndex, 0, moved);
+
+      const withUpdatedOrder = list.map((item, index) => ({
+        ...item,
+        sortOrder: index,
+      }));
+
+      return {
+        ...prev,
+        [field]: withUpdatedOrder,
+      };
+    });
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -435,8 +524,9 @@ export default function AdminEventEditor({ event }: { event?: EditorEvent }) {
                 <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/50">Statut</label>
                 <select className={inputCls} value={formData.status} onChange={(e) => updateField('status', e.target.value)}>
                   <option value="draft">Brouillon</option>
-                  <option value="published">Publié</option>
                   <option value="upcoming">À venir</option>
+                  <option value="published">Publié</option>
+                  <option value="finished">Terminé</option>
                   <option value="archived">Archivé</option>
                 </select>
               </div>
@@ -537,27 +627,35 @@ export default function AdminEventEditor({ event }: { event?: EditorEvent }) {
 
             <Repeater
               title={`Items du programme (${LOCALE_LABELS[activeLocale]})`}
-              description="Temps/intervalle partagé, contenu traduit selon la langue active."
+              description="Temps/intervalle partagé, contenu traduit selon la langue active. Glissez-déposez pour réordonner."
               items={formData.scheduleItems}
               onAdd={() => addListItem('scheduleItems', createEmptyScheduleItem)}
               onRemove={(index) => removeListItem('scheduleItems', index, () => createEmptyScheduleItem(0))}
+              enableDragDrop
+              onReorder={(fromIndex, toIndex) => reorderList('scheduleItems', fromIndex, toIndex)}
               renderItem={(item, index) => (
-                <div className="grid gap-4 md:grid-cols-4">
-                  <div>
-                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/50">Temps / intervalle</label>
+                <div className="grid grid-cols-12 gap-2">
+                  <div className="col-span-2">
+                    <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-white/50">Horaire</label>
                     <input className={inputCls} value={item.timeLabel} onChange={(e) => updateListItem('scheduleItems', index, { timeLabel: e.target.value })} placeholder="09:00 - 09:30" />
                   </div>
-                  <div className="md:col-span-2">
-                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/50">Titre</label>
+                  <div className="col-span-2">
+                    <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-white/50">Bloc</label>
+                    <select className={inputCls} value={item.blockType ?? 'morning'} onChange={(e) => updateListItem('scheduleItems', index, { blockType: e.target.value })}>
+                      <option value="anchoring">Ancrage</option>
+                      <option value="morning">Matinée</option>
+                      <option value="noon">Midi</option>
+                      <option value="afternoon">Après-midi</option>
+                      <option value="closing">Clôture</option>
+                    </select>
+                  </div>
+                  <div className="col-span-4">
+                    <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-white/50">Titre ({LOCALE_LABELS[activeLocale]})</label>
                     <input className={inputCls} value={item.translations[activeLocale].title} onChange={(e) => updateScheduleTranslation(index, { title: e.target.value })} />
                   </div>
-                  <div>
-                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/50">Ordre</label>
-                    <input type="number" className={inputCls} value={item.sortOrder} onChange={(e) => updateListItem('scheduleItems', index, { sortOrder: Number(e.target.value) })} />
-                  </div>
-                  <div className="md:col-span-4">
-                    <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/50">Sous-titre / description</label>
-                    <textarea className={textareaCls} rows={2} value={item.translations[activeLocale].subtitle} onChange={(e) => updateScheduleTranslation(index, { subtitle: e.target.value })} />
+                  <div className="col-span-4">
+                    <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-white/50">Sous-titre ({LOCALE_LABELS[activeLocale]})</label>
+                    <input className={inputCls} value={item.translations[activeLocale].subtitle} onChange={(e) => updateScheduleTranslation(index, { subtitle: e.target.value })} />
                   </div>
                 </div>
               )}
@@ -706,6 +804,12 @@ export default function AdminEventEditor({ event }: { event?: EditorEvent }) {
                     <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/50">Ordre</label>
                     <input type="number" className={inputCls} value={item.sortOrder} onChange={(e) => updateListItem('documents', index, { sortOrder: Number(e.target.value) })} />
                   </div>
+                    <div className="md:col-span-4">
+                      <label className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/80 cursor-pointer">
+                        <input type="checkbox" checked={item.isVisible ?? true} onChange={(e) => updateListItem('documents', index, { isVisible: e.target.checked })} />
+                        <span>Téléchargement activé (visible sur la page publique une fois l'événement publié ou terminé)</span>
+                      </label>
+                    </div>
                   <div className="md:col-span-2">
                     <label className="mb-2 block text-xs font-semibold uppercase tracking-wider text-white/50">Titre</label>
                     <input className={inputCls} value={item.translations[activeLocale].title} onChange={(e) => updateDocumentTranslation(index, { title: e.target.value })} />

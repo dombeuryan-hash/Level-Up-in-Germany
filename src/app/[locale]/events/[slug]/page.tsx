@@ -17,7 +17,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const loc = normalizeLocale(locale);
   const event = await getEventBySlug(slug);
 
-  if (!event || event.status !== 'published') {
+  const PUBLIC_STATUSES = ['published', 'upcoming', 'finished'];
+  if (!event || !PUBLIC_STATUSES.includes(event.status)) {
     return {
       title: eventsCopy[loc].title,
       description: eventsCopy[loc].intro,
@@ -37,7 +38,8 @@ export default async function EventBySlugPage({ params }: { params: Promise<{ lo
   const loc = normalizeLocale(locale);
   const event = await getEventBySlug(slug);
 
-  if (!event || event.status !== 'published') {
+  const PUBLIC_STATUSES = ['published', 'upcoming', 'finished'];
+  if (!event || !PUBLIC_STATUSES.includes(event.status)) {
     notFound();
   }
 
@@ -52,7 +54,7 @@ export default async function EventBySlugPage({ params }: { params: Promise<{ lo
         <div className="absolute inset-0 opacity-50 bg-[radial-gradient(circle_at_20%_30%,rgba(233,140,11,0.22),transparent_50%)]" />
         <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_85%_80%,rgba(140,26,26,0.5),transparent_45%)]" />
         <div className="relative mx-auto max-w-6xl px-4 pb-14 pt-24 sm:px-6 sm:pb-16 sm:pt-28">
-          <Link href={`/${loc}/events/archives`} className="inline-flex items-center gap-2 text-sm font-semibold text-accent-light transition hover:text-white">
+            <Link href={`/${loc}/events`} className="inline-flex items-center gap-2 text-sm font-semibold text-accent-light transition hover:text-white">
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>

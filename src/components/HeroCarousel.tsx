@@ -16,6 +16,14 @@ interface HeroCarouselProps {
   images?: string[];
 }
 
+function AnimatedHeroTitle({ title }: { title: string }) {
+  return (
+    <span className="hero-typewriter" aria-label={title}>
+      {title}
+    </span>
+  );
+}
+
 export default function HeroCarousel({
   title,
   tagline,
@@ -148,9 +156,8 @@ export default function HeroCarousel({
             </div>
           )}
           {title && (
-            <h1 className="animate-hero-title font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-5 tracking-tight leading-[1.08]"
-                style={{ textShadow: '0 2px 20px rgba(26,26,26,0.5), 0 1px 3px rgba(0,0,0,0.3)' }}>
-              {title}
+            <h1 className="animate-hero-title mb-5 leading-[1.15]">
+              <AnimatedHeroTitle title={title} />
             </h1>
           )}
           {subtitle && (

@@ -23,6 +23,12 @@ export type HomeCopy = {
   missionTitle: string;
   missionLead: string;
   missionBullets: string[];
+  businessTourEyebrow: string;
+  businessTourTitle: string;
+  businessTourTagline: string;
+  businessTourBody: string;
+  businessTourItems: string[];
+  businessTourCta: string;
   profilesEyebrow: string;
   profilesTitle: string;
   profilesLead: string;
@@ -104,10 +110,22 @@ export const homeContent: Record<Locale, HomeCopy> = {
     missionLead:
       'Level Up in Germany begleitet Menschen mit Mentoring, Partnerhochschulen, Webinaren, Live-Events und einem Netzwerk inspirierender Role Models.',
     missionBullets: [
-      'Mentoring & MentorBridge fuer persoenliche Klarheit und naechste Schritte.',
+      'Business Tour: hinter die Kulissen erfolgreicher Marken und Gruender:innen.',
       'Workshops zu Karriere, Business, Finanzen und Leben in Deutschland.',
       'Jaehrliche Konferenz und Community-Events fuer echtes Networking.',
     ],
+    businessTourEyebrow: 'Neue Initiative',
+    businessTourTitle: 'Level Up Business Tour',
+    businessTourTagline: 'Wir zeigen keinen Erfolg. Wir zeigen die Arbeit dahinter.',
+    businessTourBody:
+      'Hinter jeder erfolgreichen Marke steckt eine Geschichte, die kaum jemand sieht: die 5-Uhr-Morgen, die gescheiterten Versuche, die strategischen Entscheidungen. Die Business Tour geht direkt in Unternehmen, Marken und Gruender-Oekosysteme — besonders in der afrikanischen Diaspora — und dokumentiert den echten Weg hinter dem Ergebnis.',
+    businessTourItems: [
+      'Die verborgene Arbeit hinter sichtbarem Erfolg',
+      'Echte Gruendungsgeschichten: Fehler, Disziplin, Strategie',
+      'Geschaeftssysteme und Betriebsablaeufe aus der Praxis',
+      'Praktische Inspiration fuer Menschen, die selbst gründen wollen',
+    ],
+    businessTourCta: 'Mehr erfahren',
     profilesEyebrow: 'Drei Profile, eine Bewegung',
     profilesTitle: 'Finde deinen Platz im Netzwerk',
     profilesLead:
@@ -210,10 +228,22 @@ export const homeContent: Record<Locale, HomeCopy> = {
     missionLead:
       'Level Up in Germany supports people through mentors, university partnerships, webinars, in-person events and a network of inspiring role models.',
     missionBullets: [
-      'Mentoring & MentorBridge for clarity and next steps.',
+      'Business Tour: going behind the scenes of successful brands and entrepreneurs.',
       'Workshops on career, business, finance and life in Germany.',
       'Annual conference and community events for real connection.',
     ],
+    businessTourEyebrow: 'New Initiative',
+    businessTourTitle: 'Level Up Business Tour',
+    businessTourTagline: 'We don\'t showcase success. We reveal the work behind it.',
+    businessTourBody:
+      'Behind every successful brand, there is a story people never see — the 5 a.m. work, the failed attempts, the positioning decisions. The Business Tour goes directly inside companies, brands and founder ecosystems in Germany — especially within the African diaspora — to document the real journey behind the visible result.',
+    businessTourItems: [
+      'The hidden work behind visible success',
+      'Real entrepreneurial journeys: failures, discipline, strategy',
+      'Business systems and operations from the inside',
+      'Practical inspiration for people who want to start too',
+    ],
+    businessTourCta: 'Learn more',
     profilesEyebrow: 'Three profiles, one movement',
     profilesTitle: 'Find your place in the network',
     profilesLead:
@@ -315,10 +345,22 @@ export const homeContent: Record<Locale, HomeCopy> = {
     missionLead:
       'Level Up in Germany accompagne par le mentorat, les partenariats universitaires, les webinaires, les evenements et un reseau de modeles inspirants.',
     missionBullets: [
-      'Mentorat et MentorBridge pour la clarte et les prochaines etapes.',
+      'Business Tour: aller dans les coulisses des marques et entrepreneurs qui reussissent.',
       'Ateliers carriere, business, finances et vie en Allemagne.',
       'Conference annuelle et evenements pour du lien reel.',
     ],
+    businessTourEyebrow: 'Nouvelle initiative',
+    businessTourTitle: 'Level Up Business Tour',
+    businessTourTagline: 'On ne montre pas le succes. On revele le travail derriere.',
+    businessTourBody:
+      'Derriere chaque marque qui reussit, il y a une histoire que personne ne voit: les levers a 5h du matin, les echecs, les decisions de positionnement. La Business Tour va directement dans les entreprises, marques et ecosystemes de fondateurs en Allemagne — surtout au sein de la diaspora africaine — pour documenter le vrai parcours derriere le resultat visible.',
+    businessTourItems: [
+      'Le travail cache derriere le succes visible',
+      'Les vrais parcours entrepreneuriaux : echecs, discipline, strategie',
+      'Systemes et operations vus de l interieur',
+      'Inspiration concrete pour ceux qui veulent se lancer',
+    ],
+    businessTourCta: 'En savoir plus',
     profilesEyebrow: 'Trois profils, un mouvement',
     profilesTitle: 'Trouve ta place dans le reseau',
     profilesLead:

@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Nathalyn';
+  src: url('/fonts/NathalynDemo.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --foreground: #1a1a1a;
   /* Fond type papier / plâtre chaud (aligné avec le thème premium) */
@@ -261,9 +269,124 @@ body.paper-texture::after {
   animation: heroFadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
 }
 
+@keyframes heroLetterReveal {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) scale(0.92);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes heroTitleReveal {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+    clip-path: inset(0 0 100% 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes heroAccentSweep {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.2);
+    transform-origin: left center;
+  }
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+@keyframes heroWordmarkSheen {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.hero-title-wordmark {
+  font-family: 'Nathalyn', Georgia, serif;
+  font-weight: normal;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: #ffffff;
+  text-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.35);
+  text-wrap: balance;
+}
+
+.hero-title-reveal {
+  overflow: hidden;
+  animation: heroTitleReveal 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
+}
+
+.hero-title-accent {
+  opacity: 0;
+  animation: heroAccentSweep 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.55s both;
+}
+
+.hero-title-word + .hero-title-word {
+  margin-left: 0.12em;
+}
+
+.hero-title-letter {
+  opacity: 0;
+  animation: heroLetterReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 .animate-hero-subtitle {
   animation: heroFadeUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.22s both;
 }
+
+/* ── Typewriter hero title ── */
+.hero-typewriter {
+  display: inline-block;
+  font-family: 'Nathalyn', Georgia, serif;
+  font-weight: normal;
+  font-size: clamp(1.8rem, 5vw, 3.6rem);
+  color: #ffffff;
+  text-shadow: 0 4px 24px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.35);
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 3px solid rgba(255,255,255,0.85);
+  width: 0;
+  animation:
+    heroTypewriter 2.4s steps(19) 0.3s 1 normal forwards,
+    heroBlinkCursor 600ms steps(1) infinite;
+}
+
+@keyframes heroTypewriter {
+  from { width: 0; }
+  to   { width: 19ch; }
+}
+
+@keyframes heroBlinkCursor {
+  from { border-right-color: rgba(255,255,255,0.85); }
+  to   { border-right-color: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-typewriter {
+    width: 19ch;
+    animation: heroBlinkCursor 600ms steps(1) infinite;
+  }
+}
+/* ── end typewriter ── */
 
 .animate-hero-buttons {
   animation: heroScaleIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
@@ -345,6 +468,22 @@ body.paper-texture::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hero-title-reveal,
+  .hero-title-accent {
+    animation: none;
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+  .hero-title-wordmark {
+    animation: none;
+  }
+  .hero-title-letter {
+    opacity: 1;
+    animation: none;
+    transform: none;
+    filter: none;
+  }
   .animate-tab-fade-in {
     animation: none;
     opacity: 1;

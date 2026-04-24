@@ -360,7 +360,6 @@ export function EditionContent({
                 </div>
               </div>
             ))}
-
           {!hasBlocks && hasFlat && (
             <div className="relative">
               <div className="absolute left-3 top-0 bottom-0 w-px bg-gradient-to-b from-accent/40 via-primary/30 to-transparent" />

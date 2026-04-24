@@ -23,8 +23,41 @@ model NewsletterSubscriber {
   city             String?
   status           String   @default("active")
   unsubscribeToken String?  @unique @map("unsubscribe_token")
+  eventCommunicationLeads EventCommunicationLead[]
 
   @@map("newsletter_subscribers")
+}
+
+model CommunicationSettings {
+  id                         String   @id @default(uuid())
+  isCommunicationModeActive  Boolean  @default(false) @map("is_communication_mode_active")
+  popupDelaySeconds          Int      @default(5) @map("popup_delay_seconds")
+  title                      String   @default("Something is coming...")
+  description                String   @default("Be among the first to receive updates about the next Level Up event.")
+  buttonText                 String   @default("Join the list") @map("button_text")
+  eventId                    String?  @unique @map("event_id")
+  createdAt                  DateTime @default(now()) @map("created_at")
+  updatedAt                  DateTime @updatedAt @map("updated_at")
+  event                      Event?   @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  @@map("communication_settings")
+}
+
+model EventCommunicationLead {
+  id                    String                @id @default(uuid())
+  eventId               String                @map("event_id")
+  email                 String
+  firstName             String?               @map("first_name")
+  subscriberId          String?               @map("subscriber_id")
+  source                String                @default("event_communication_popup")
+  createdAt             DateTime              @default(now()) @map("created_at")
+  updatedAt             DateTime              @updatedAt @map("updated_at")
+  event                 Event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  subscriber            NewsletterSubscriber? @relation(fields: [subscriberId], references: [id], onDelete: SetNull)
+
+  @@unique([eventId, email])
+  @@index([subscriberId])
+  @@map("event_communication_leads")
 }
 
 model NewsletterCampaign {
@@ -181,6 +214,8 @@ model Event {
   eventOrganizations EventOrganization[]
   mediaItems         EventMedia[]
   documents          EventDocument[]
+  communicationSetting CommunicationSettings?
+  communicationLeads   EventCommunicationLead[]
 
   @@index([status, sortOrder])
   @@index([publishedAt])
@@ -303,6 +338,7 @@ model ScheduleItem {
   sectionId    String?                   @map("section_id")
   startTime    String?                   @map("start_time")
   endTime      String?                   @map("end_time")
+  blockType    String?                   @default("morning") @map("block_type")
   sessionType  String                    @default("other") @map("session_type")
   room         String?                   @default("")
   sortOrder    Int                       @default(0) @map("sort_order")
