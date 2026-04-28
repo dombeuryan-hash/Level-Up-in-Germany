@@ -113,6 +113,49 @@ model Member {
   @@map("members")
 }
 
+model HeroSlide {
+  id         String   @id @default(uuid())
+  imageUrl   String   @map("image_url")
+  isMain     Boolean  @default(false) @map("is_main")
+  titleFr    String?  @map("title_fr")
+  titleDe    String?  @map("title_de")
+  titleEn    String?  @map("title_en")
+  subtitleFr String?  @map("subtitle_fr")
+  subtitleDe String?  @map("subtitle_de")
+  subtitleEn String?  @map("subtitle_en")
+  altTextFr  String?  @map("alt_text_fr")
+  altTextDe  String?  @map("alt_text_de")
+  altTextEn  String?  @map("alt_text_en")
+  linkType   String?  @map("link_type")
+  linkTarget String?  @map("link_target")
+  isActive   Boolean  @default(true) @map("is_active")
+  sortOrder  Int      @default(0) @map("sort_order")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive, sortOrder])
+  @@map("hero_slides")
+}
+
+model HomeButton {
+  id           String   @id @default(uuid())
+  labelFr      String   @map("label_fr")
+  labelDe      String   @map("label_de")
+  labelEn      String   @map("label_en")
+  linkType     String   @default("internal") @map("link_type")
+  linkTarget   String   @map("link_target")
+  colorVariant String   @default("red") @map("color_variant")
+  displayOrder Int      @default(0) @map("display_order")
+  isActive     Boolean  @default(true) @map("is_active")
+  isPrimary    Boolean  @default(false) @map("is_primary")
+  openInNewTab Boolean  @default(false) @map("open_in_new_tab")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([isActive, displayOrder])
+  @@map("home_buttons")
+}
+
 model BlogPost {
   id         String   @id @default(uuid())
   title      String
