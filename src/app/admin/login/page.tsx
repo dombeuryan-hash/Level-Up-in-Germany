@@ -25,7 +25,9 @@ export default function AdminLoginPage() {
     setLoading(false);
 
     if (res.ok) {
-      router.push('/admin');
+      // Redirect back to the originally requested admin page, or dashboard
+      const from = new URLSearchParams(window.location.search).get('from');
+      router.push(from && from.startsWith('/admin') ? from : '/admin');
     } else {
       setError('Email ou mot de passe incorrect.');
     }
