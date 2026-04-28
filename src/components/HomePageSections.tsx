@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -58,15 +58,22 @@ const momentsCopy: Record<Locale, { eyebrow: string; title: string; hint: string
   },
 };
 
-type Props = { t: HomeCopy; base: string; joinWhatsAppUrl: string; locale: Locale };
+type Props = {
+  t: HomeCopy;
+  base: string;
+  joinWhatsAppUrl: string;
+  locale: Locale;
+  communityPhotos?: Array<{ src: string; alt?: string }>;
+};
 
-export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
+export function HomePageSections({ t, base, joinWhatsAppUrl, locale, communityPhotos }: Props) {
   const moments = momentsCopy[locale];
+  const photos = communityPhotos && communityPhotos.length > 0 ? communityPhotos : EVENT_2025_PHOTOS;
 
   return (
     <>
       {/* Problem */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-gray-50 to-white py-16 sm:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-b from-gray-50/80 to-white py-20 sm:py-28">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(140,26,26,0.08),transparent)]" />
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
           <RevealOnScroll>
@@ -79,7 +86,7 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
           <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
             {t.problemPoints.map((point, i) => (
               <RevealOnScroll key={i} delayMs={i * 80} className="h-full">
-                <div className="h-full rounded-2xl border border-gray-100 border-t-2 border-t-accent/70 bg-white/80 p-6 shadow-sm backdrop-blur-sm card-hover-lift">
+                <div className="h-full rounded-2xl border border-gray-100/80 border-t-2 border-t-accent/60 bg-white p-7 sm:p-8 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.06)] backdrop-blur-sm card-hover-lift">
                   <span className="text-accent font-display text-3xl font-bold tabular-nums">
                     {String(i + 1).padStart(2, '0')}
                   </span>
@@ -92,7 +99,7 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
       </section>
 
       {/* Vision — bold full-bleed statement */}
-      <section className="relative py-20 sm:py-32 text-white overflow-hidden">
+      <section className="relative py-24 sm:py-36 text-white overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#110808] via-[#1f0d0d] to-brand-dark" />
         <div className="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_25%_15%,rgba(233,140,11,0.28),transparent_48%)]" />
         <div className="absolute inset-0 opacity-50 bg-[radial-gradient(circle_at_80%_85%,rgba(140,26,26,0.45),transparent_45%)]" />
@@ -116,7 +123,7 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
             <p className="relative z-10 text-xs sm:text-sm font-semibold uppercase tracking-[0.3em] text-accent mb-6">
               {t.visionEyebrow}
             </p>
-            <h2 className="relative z-10 text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight mb-6 text-balance">
+            <h2 className="relative z-10 font-display text-3xl sm:text-4xl md:text-5xl font-semibold text-white leading-tight mb-6 text-balance">
               {t.visionTitle}
             </h2>
             <p className="relative z-10 text-lg sm:text-xl text-white/75 leading-relaxed max-w-2xl mx-auto">
@@ -127,7 +134,7 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
       </section>
 
       {/* Mission */}
-      <section className="py-16 sm:py-24 bg-white">
+      <section className="py-20 sm:py-28 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <RevealOnScroll>
             <SectionHeading
@@ -152,8 +159,86 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
         </div>
       </section>
 
+      {/* Level Up Business Tour */}
+      <section className="relative py-24 sm:py-36 overflow-hidden bg-[#0c0c0c] text-white">
+        {/* Background texture */}
+        <div className="absolute inset-0 opacity-[0.06] bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%221%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_70%_at_80%_50%,rgba(233,140,11,0.12),transparent)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_60%_at_10%_30%,rgba(140,26,26,0.18),transparent)]" />
+
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            {/* Left: text */}
+            <div>
+              <RevealOnScroll>
+                <span className="inline-block text-xs font-bold uppercase tracking-[0.3em] text-accent mb-5">
+                  {t.businessTourEyebrow}
+                </span>
+                <h2 className="font-display text-4xl sm:text-5xl lg:text-6xl font-semibold text-white leading-tight mb-4 text-balance">
+                  {t.businessTourTitle}
+                </h2>
+                <p className="text-lg sm:text-xl font-medium text-accent/90 mb-6 leading-snug italic">
+                  &ldquo;{t.businessTourTagline}&rdquo;
+                </p>
+                <p className="text-white/70 leading-relaxed mb-8 max-w-lg">
+                  {t.businessTourBody}
+                </p>
+              </RevealOnScroll>
+              <RevealOnScroll delayMs={80}>
+                <ul className="space-y-3 mb-10">
+                  {t.businessTourItems.map((item, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-accent text-black text-xs font-bold">▶</span>
+                      <span className="text-white/80 leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </RevealOnScroll>
+              <RevealOnScroll delayMs={140}>
+                <Link
+                  href={`${base}/contact`}
+                  className="inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 text-sm font-semibold text-black shadow-lg shadow-accent/30 hover:bg-amber-400 hover:scale-[1.03] active:scale-[0.97] transition-all duration-200"
+                >
+                  {t.businessTourCta}
+                  <span aria-hidden>→</span>
+                </Link>
+              </RevealOnScroll>
+            </div>
+
+            {/* Right: visual quote card */}
+            <RevealOnScroll delayMs={60}>
+              <div className="relative rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-sm p-8 sm:p-10 shadow-[0_0_80px_rgba(233,140,11,0.10)]">
+                {/* Film clapperboard icon */}
+                <div className="mb-6 flex items-center gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/15 text-accent text-xl">🎬</span>
+                  <span className="text-xs font-bold uppercase tracking-[0.25em] text-white/40">Business Tour</span>
+                </div>
+                <blockquote className="font-display text-2xl sm:text-3xl font-semibold text-white leading-snug mb-6">
+                  Behind every successful brand,<br />
+                  <span className="text-accent">there&apos;s a story people never see.</span><br />
+                  That&apos;s the story we film.
+                </blockquote>
+                <div className="h-px w-full bg-white/10 mb-6" />
+                <div className="grid grid-cols-3 gap-4 text-center">
+                  {[
+                    { icon: '🏭', label: locale === 'fr' ? 'Entreprises' : locale === 'de' ? 'Betriebe' : 'Businesses' },
+                    { icon: '🎥', label: locale === 'fr' ? 'Mini-docs' : 'Mini-docs' },
+                    { icon: '🌍', label: locale === 'fr' ? 'Diaspora' : 'Diaspora' },
+                  ].map((item) => (
+                    <div key={item.label} className="rounded-2xl bg-white/[0.05] py-4 px-2">
+                      <div className="text-2xl mb-1">{item.icon}</div>
+                      <div className="text-xs text-white/50 font-medium">{item.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </RevealOnScroll>
+          </div>
+        </div>
+      </section>
+
       {/* 3 profiles */}
-      <section className="py-16 sm:py-24 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-20 sm:py-28 bg-gradient-to-b from-gray-50/60 to-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <RevealOnScroll>
             <SectionHeading
@@ -162,9 +247,9 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
               subtitle={t.profilesLead}
             />
           </RevealOnScroll>
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-3 items-stretch">
             {t.profiles.map((p, i) => (
-              <RevealOnScroll key={p.title} delayMs={i * 90} className="h-full">
+              <RevealOnScroll key={p.title} delayMs={i * 90} className="h-full flex flex-col">
                 <PremiumSurfaceCard
                   title={p.title}
                   subtitle={p.role}
@@ -178,7 +263,7 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
       </section>
 
       {/* Programs */}
-      <section className="py-16 sm:py-24 bg-white">
+      <section className="py-20 sm:py-28 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <RevealOnScroll>
             <SectionHeading
@@ -210,21 +295,44 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
       </section>
 
       {/* Values */}
-      <section className="py-16 sm:py-24 bg-gray-50 border-y border-gray-100">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+      <section className="relative py-24 sm:py-36 overflow-hidden bg-[#0f0a0a]">
+        {/* Ambient glows */}
+        <div className="pointer-events-none absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-primary/20 blur-[120px]" />
+        <div className="pointer-events-none absolute -bottom-40 -right-40 h-[500px] w-[500px] rounded-full bg-accent/15 blur-[100px]" />
+
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
+          {/* Header */}
           <RevealOnScroll>
-            <SectionHeading
-              eyebrow={t.impactEyebrow}
-              title={t.impactTitle}
-              subtitle={t.impactLead}
-            />
+            <div className="text-center mb-16 sm:mb-20">
+              <span className="inline-block text-xs font-bold uppercase tracking-[0.35em] text-accent mb-5">
+                {t.impactEyebrow}
+              </span>
+              <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-semibold text-white leading-tight mb-5 text-balance">
+                {t.impactTitle}
+              </h2>
+              <p className="text-white/50 text-lg max-w-2xl mx-auto leading-relaxed">
+                {t.impactLead}
+              </p>
+            </div>
           </RevealOnScroll>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+          {/* Value cards — horizontal numbered list */}
+          <div className="grid gap-px sm:grid-cols-2 lg:grid-cols-3 rounded-2xl overflow-hidden border border-white/[0.06]">
             {t.values.map((v, i) => (
-              <RevealOnScroll key={v.title} delayMs={i * 50} className="h-full">
-                <div className="h-full rounded-2xl bg-white border border-gray-100 p-6 shadow-sm hover:shadow-md transition-shadow duration-300">
-                  <h3 className="font-semibold text-primary">{v.title}</h3>
-                  <p className="mt-2 text-sm text-gray-600 leading-relaxed">{v.desc}</p>
+              <RevealOnScroll key={v.title} delayMs={i * 60}>
+                <div className="group relative bg-white/[0.03] hover:bg-white/[0.07] transition-all duration-500 p-8 sm:p-10 flex flex-col gap-4 h-full border border-white/[0.05]">
+                  {/* Number */}
+                  <span className="font-display text-6xl font-bold leading-none text-white/[0.06] group-hover:text-accent/20 transition-colors duration-500 select-none absolute top-6 right-8">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  {/* Accent line */}
+                  <span className="block h-[2px] w-10 rounded-full bg-gradient-to-r from-accent to-primary group-hover:w-16 transition-all duration-500" />
+                  <h3 className="font-display text-xl sm:text-2xl font-semibold text-white leading-snug">
+                    {v.title}
+                  </h3>
+                  <p className="text-white/55 text-sm leading-relaxed group-hover:text-white/75 transition-colors duration-300">
+                    {v.desc}
+                  </p>
                 </div>
               </RevealOnScroll>
             ))}
@@ -233,7 +341,7 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
       </section>
 
       {/* Stats */}
-      <section className="relative py-16 sm:py-20 overflow-hidden">
+      <section className="relative py-20 sm:py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary-dark via-primary to-primary-dark" />
         <div
           className="absolute inset-0 opacity-20"
@@ -251,7 +359,7 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
       </section>
 
       {/* ——— PHOTO GALLERY STRIP ——— */}
-      <section className="relative py-16 sm:py-24 bg-brand-dark overflow-hidden">
+      <section className="relative py-20 sm:py-28 bg-brand-dark overflow-hidden">
         {/* Ambient glows */}
         <div className="pointer-events-none absolute -top-32 -left-32 w-80 h-80 rounded-full bg-accent/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 -right-24 w-72 h-72 rounded-full bg-primary/20 blur-3xl" />
@@ -266,7 +374,7 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
               </span>
               <span className="h-px flex-1 bg-white/10" />
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white text-balance text-center">
+            <h2 className="font-display text-3xl sm:text-4xl font-semibold text-white text-balance text-center">
               {moments.title}
             </h2>
           </RevealOnScroll>
@@ -279,7 +387,7 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
           {/* Right fade */}
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-16 sm:w-24 z-10 bg-gradient-to-l from-brand-dark to-transparent" />
           <div className="pl-4 sm:pl-6">
-            <PhotoStrip photos={EVENT_2025_PHOTOS} />
+            <PhotoStrip photos={photos} />
           </div>
         </div>
 
@@ -289,22 +397,20 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
       </section>
 
       {/* CTA band */}
-      <section className="py-16 sm:py-24 bg-gradient-to-br from-white via-orange-50/40 to-white relative overflow-hidden">
+      <section className="py-20 sm:py-28 bg-gradient-to-br from-white via-orange-50/30 to-white relative overflow-hidden">
         <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-accent/20 blur-3xl" />
         <div className="pointer-events-none absolute -left-20 bottom-0 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <RevealOnScroll>
-            <h2 className="text-3xl sm:text-4xl font-bold text-brand-dark text-balance">{t.ctaBandTitle}</h2>
+            <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-semibold text-brand-dark text-balance">{t.ctaBandTitle}</h2>
             <p className="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">{t.ctaBandSubtitle}</p>
             <div className="mt-10 flex flex-wrap justify-center gap-3 sm:gap-4">
-              <a
-                href={joinWhatsAppUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-w-[180px] justify-center items-center rounded-full bg-primary px-6 py-3.5 text-white font-semibold shadow-lg shadow-primary/25 hover:bg-primary-light hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+              <Link
+                href={`${base}/contact`}
+                className="inline-flex min-w-[180px] justify-center items-center rounded-full bg-primary px-7 py-4 text-white font-semibold shadow-lg shadow-primary/20 hover:bg-primary-light hover:shadow-xl hover:shadow-primary/25 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
               >
                 {t.ctaJoin}
-              </a>
+              </Link>
               <Link
                 href={whoWeAreHref(locale)}
                 className="inline-flex min-w-[180px] justify-center items-center rounded-full border-2 border-primary bg-white px-6 py-3.5 text-primary font-semibold hover:bg-primary/5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
@@ -312,7 +418,7 @@ export function HomePageSections({ t, base, joinWhatsAppUrl, locale }: Props) {
                 {t.ctaMentor}
               </Link>
               <Link
-                href={`${base}/partners`}
+                href={`${base}/contact`}
                 className="inline-flex min-w-[180px] justify-center items-center rounded-full bg-brand-dark px-6 py-3.5 text-white font-semibold hover:bg-black hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
               >
                 {t.ctaPartner}

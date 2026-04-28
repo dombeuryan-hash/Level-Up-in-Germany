@@ -18,9 +18,10 @@ const TYPE_LABEL: Record<FormPayload['type'], string> = {
 
 export async function sendFormSubmissionEmail(payload: FormPayload): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY?.trim();
-  const to = (process.env.FORMS_TO_EMAIL || 'info@levelupingermany.de').trim();
+  const to = (process.env.FORMS_TO_EMAIL || 'levelupdiaspo@gmail.com').trim();
   const from =
     process.env.FORMS_FROM_EMAIL?.trim() || 'Level Up in Germany <onboarding@resend.dev>';
+  const replyTo = payload.values.email?.trim();
 
   const subject = `[Level Up] ${TYPE_LABEL[payload.type]}`;
   const rows = Object.entries(payload.values)
@@ -52,6 +53,7 @@ export async function sendFormSubmissionEmail(payload: FormPayload): Promise<voi
     body: JSON.stringify({
       from,
       to: [to],
+      ...(replyTo ? { reply_to: replyTo } : {}),
       subject,
       html,
     }),

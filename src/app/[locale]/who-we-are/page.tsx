@@ -6,6 +6,7 @@ import { whoWeAreContent } from '@/content/who-we-are';
 import { CoreTeamGrid } from '@/components/CoreTeamGrid';
 import { RevealOnScroll } from '@/components/RevealOnScroll';
 import { generateMetadataForPath } from '@/lib/seo';
+import { prisma } from '@/lib/prisma';
 
 export async function generateMetadata(props: { params: Promise<{ locale: string }> }) {
   return generateMetadataForPath(props.params, '/who-we-are');
@@ -15,6 +16,40 @@ export default async function WhoWeArePage({ params }: { params: Promise<{ local
   const { locale } = await params;
   const loc = (locale === 'de' || locale === 'en' || locale === 'fr' ? locale : 'de') as Locale;
   const t = whoWeAreContent[loc];
+
+  // Fetch DB bios and merge with static data
+  let dbRows: {
+    name: string;
+    roleDe: string | null;
+    roleEn: string | null;
+    roleFr: string | null;
+    bioDe: string | null;
+    bioEn: string | null;
+    bioFr: string | null;
+    linkedin: string | null;
+    imageUrl: string | null;
+  }[] = [];
+  try {
+    dbRows = await prisma.teamMember.findMany();
+  } catch {
+    // DB not yet migrated — use static data only
+  }
+
+  const members = CORE_TEAM_MEMBERS.map((m) => {
+    const db = dbRows.find((r) => r.name === m.name);
+    if (!db) return m;
+    return {
+      ...m,
+      role: {
+        de: db.roleDe || m.role.de,
+        en: db.roleEn || m.role.en,
+        fr: db.roleFr || m.role.fr,
+      },
+      image: db.imageUrl || m.image,
+      bio: { de: db.bioDe ?? '', en: db.bioEn ?? '', fr: db.bioFr ?? '' },
+      linkedin: db.linkedin || undefined,
+    };
+  });
 
   return (
     <div className="overflow-hidden">
@@ -69,7 +104,7 @@ export default async function WhoWeArePage({ params }: { params: Promise<{ local
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6">
           <RevealOnScroll>
-            <CoreTeamGrid members={CORE_TEAM_MEMBERS} locale={loc} />
+            <CoreTeamGrid members={members} locale={loc} />
           </RevealOnScroll>
         </div>
       </section>
@@ -181,7 +216,7 @@ export default async function WhoWeArePage({ params }: { params: Promise<{ local
                   <>
                     Nous construisons le pont entre ceux qui{' '}
                     <span className="text-accent">ont déjà avancé</span> et ceux qui
-                    arrivent — pour que l'expérience se transmette, que les erreurs
+                    arrivent — pour que l&apos;expérience se transmette, que les erreurs
                     se réduisent et que les{' '}
                     <span className="text-accent">opportunités restent accessibles</span>.
                   </>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { locales, localeNames, type Locale } from '@/i18n/config';
@@ -9,25 +9,29 @@ import { isWhoWeArePathname, localeSwitcherHref, whoWeAreHref } from '@/lib/whoW
 // Même pictogramme que la favicon (icône U / flèche, bandes orange–rouge–noir)
 import navLogoImage from '@/assets/lug-mark-nobg.png';
 
-/** Même taille sur toutes les pages (évite le saut accueil ↔ autres routes). */
-const LOGO_SIZE_CLASS =
-  'h-11 w-11 sm:h-14 sm:w-14 md:h-[3.75rem] md:w-[3.75rem]';
-
-function Logo() {
+function Logo({ logoUrl }: { logoUrl?: string | null }) {
   const [error, setError] = useState(false);
-  const logoSrc = navLogoImage.src;
+  const logoSrc = logoUrl?.trim() || navLogoImage.src;
 
   return (
     <>
-      <img
-        src={logoSrc}
-        alt="Level Up in Germany"
-        className={`${LOGO_SIZE_CLASS} shrink-0 rounded-xl object-contain object-center ring-1 ring-black/5 shadow-sm origin-center hover:scale-105 hover:shadow-md hover:ring-accent/25 transition-[transform,box-shadow,ring-color] duration-300 ease-out ${error ? 'hidden' : ''}`}
-        width={120}
-        height={120}
-        fetchPriority="high"
-        onError={() => setError(true)}
-      />
+      <span className="relative inline-flex items-center justify-center">
+        {/* Soft radial glow behind the logo */}
+        <span
+          className="pointer-events-none absolute inset-0 rounded-full blur-xl opacity-40"
+          style={{ background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.85) 0%, transparent 70%)' }}
+          aria-hidden
+        />
+        <img
+          src={logoSrc}
+          alt="Level Up in Germany"
+          className={`relative ${error ? 'hidden' : ''}`}
+          width={120}
+          height={120}
+          fetchPriority="high"
+          onError={() => setError(true)}
+        />
+      </span>
       {error && (
         <span className="text-primary font-bold text-lg sm:text-xl whitespace-nowrap">
           Level Up in Germany
@@ -45,22 +49,80 @@ const navItems: { href: string; de: string; en: string; fr: string }[] = [
   { href: '/blog-impact', de: 'Blog & Impact', en: 'Blog & Impact', fr: 'Blog & Impact' },
 ];
 
-export function Header({ locale, joinWhatsAppUrl }: { locale: Locale; joinWhatsAppUrl: string }) {
+export function Header({
+  locale,
+  joinWhatsAppUrl,
+  siteConfig,
+}: {
+  locale: Locale;
+  joinWhatsAppUrl: string;
+  siteConfig?: {
+    headerLogoUrl?: string | null;
+    headerJoinLabelFr?: string | null;
+    headerJoinLabelDe?: string | null;
+    headerJoinLabelEn?: string | null;
+    headerJoinLink?: string | null;
+    headerJoinOpenInNewTab?: boolean;
+    headerSponsorLabelFr?: string | null;
+    headerSponsorLabelDe?: string | null;
+    headerSponsorLabelEn?: string | null;
+    headerSponsorLink?: string | null;
+    headerSponsorOpenInNewTab?: boolean;
+  } | null;
+}) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Only use transparent/white-text mode on the home page (which has a dark hero behind)
+  const isHomePage = pathname === `/${locale}` || pathname === `/${locale}/`;
+  const useTransparent = isHomePage && !scrolled;
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 32);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const base = `/${locale}`;
+  const joinTarget = siteConfig?.headerJoinLink?.trim() || '/contact';
+  const sponsorTarget = siteConfig?.headerSponsorLink?.trim() || '/sponsor-donate';
+  const contactHref = /^https?:\/\//i.test(joinTarget) ? joinTarget : `${base}${joinTarget.startsWith('/') ? joinTarget : `/${joinTarget}`}`;
+  const sponsorHref = /^https?:\/\//i.test(sponsorTarget)
+    ? sponsorTarget
+    : `${base}${sponsorTarget.startsWith('/') ? sponsorTarget : `/${sponsorTarget}`}`;
+
+  const joinLabel =
+    locale === 'de'
+      ? siteConfig?.headerJoinLabelDe || 'Mitglied werden'
+      : locale === 'fr'
+        ? siteConfig?.headerJoinLabelFr || 'Rejoindre'
+        : siteConfig?.headerJoinLabelEn || 'Join';
+
+  const sponsorLabel =
+    locale === 'de'
+      ? siteConfig?.headerSponsorLabelDe || 'Sponsor / Spenden'
+      : locale === 'fr'
+        ? siteConfig?.headerSponsorLabelFr || 'Sponsor / Don'
+        : siteConfig?.headerSponsorLabelEn || 'Sponsor / Donate';
   const getLabel = (item: (typeof navItems)[0]) => item[locale];
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        useTransparent
+          ? 'bg-transparent border-b border-transparent shadow-none'
+          : 'bg-white/90 backdrop-blur-xl shadow-[0_1px_0_0_rgba(0,0,0,0.06),0_4px_24px_-4px_rgba(0,0,0,0.08)] border-b border-gray-200/60'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20 md:h-[5.5rem]">
           <Link
             href={base}
             className="shrink-0 flex items-center min-h-[56px] h-16 sm:h-20 md:h-[5.5rem] py-1"
             aria-label="Level Up in Germany – Start"
           >
-            <Logo />
+            <Logo logoUrl={siteConfig?.headerLogoUrl} />
           </Link>
 
           {/* Desktop nav */}
@@ -76,33 +138,38 @@ export function Header({ locale, joinWhatsAppUrl }: { locale: Locale; joinWhatsA
                 <Link
                   key={item.href || 'home'}
                   href={href}
-                  className={`text-sm font-medium transition ${
+                  className={`relative text-sm font-medium transition-colors duration-200 py-1 ${
                     isActive
-                      ? 'text-primary border-b-2 border-primary'
-                      : 'text-gray-600 hover:text-primary'
+                      ? useTransparent ? 'text-white' : 'text-primary'
+                      : useTransparent
+                        ? 'text-white/90 hover:text-white'
+                        : 'text-gray-600 hover:text-primary'
                   }`}
                 >
                   {getLabel(item)}
+                  <span
+                    className={`absolute -bottom-0.5 left-0 h-[2px] bg-primary transition-all duration-300 ${
+                      isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
+                  />
                 </Link>
               );
             })}
-            <a
-              href={joinWhatsAppUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-1 px-3 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary-light transition"
-            >
-              {locale === 'de' && 'Mitglied werden'}
-              {locale === 'en' && 'Join'}
-              {locale === 'fr' && 'Rejoindre'}
-            </a>
             <Link
-              href={`${base}/sponsor-donate`}
-              className="px-3 py-2 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent-dark transition"
+              href={contactHref}
+              target={siteConfig?.headerJoinOpenInNewTab ? '_blank' : undefined}
+              rel={siteConfig?.headerJoinOpenInNewTab ? 'noopener noreferrer' : undefined}
+              className="ml-2 px-4 py-2.5 rounded-full bg-primary text-white text-sm font-semibold shadow-md shadow-primary/20 hover:bg-primary-light hover:shadow-lg hover:shadow-primary/25 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
             >
-              {locale === 'de' && 'Sponsor / Spenden'}
-              {locale === 'en' && 'Sponsor / Donate'}
-              {locale === 'fr' && 'Sponsor / Don'}
+              {joinLabel}
+            </Link>
+            <Link
+              href={sponsorHref}
+              target={siteConfig?.headerSponsorOpenInNewTab ? '_blank' : undefined}
+              rel={siteConfig?.headerSponsorOpenInNewTab ? 'noopener noreferrer' : undefined}
+              className="px-4 py-2.5 rounded-full bg-accent text-white text-sm font-semibold shadow-md shadow-accent/20 hover:bg-accent-light hover:shadow-lg hover:shadow-accent/25 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+            >
+              {sponsorLabel}
             </Link>
             <LocaleSwitcher currentLocale={locale} pathname={pathname} />
           </nav>
@@ -113,7 +180,7 @@ export function Header({ locale, joinWhatsAppUrl }: { locale: Locale; joinWhatsA
             <button
               type="button"
               onClick={() => setMenuOpen(!menuOpen)}
-              className="p-2 rounded-lg text-gray-600 hover:bg-gray-100"
+              className={`p-2 rounded-lg transition-colors ${useTransparent ? 'text-white hover:bg-white/20' : 'text-gray-600 hover:bg-gray-100'}`}
               aria-label="Menu"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -147,27 +214,25 @@ export function Header({ locale, joinWhatsAppUrl }: { locale: Locale; joinWhatsA
                 );
               })}
               <li>
-                <a
-                  href={joinWhatsAppUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href={contactHref}
+                  target={siteConfig?.headerJoinOpenInNewTab ? '_blank' : undefined}
+                  rel={siteConfig?.headerJoinOpenInNewTab ? 'noopener noreferrer' : undefined}
                   onClick={() => setMenuOpen(false)}
                   className="block py-2 px-3 rounded-lg bg-primary text-white font-medium"
                 >
-                  {locale === 'de' && 'Mitglied werden'}
-                  {locale === 'en' && 'Join'}
-                  {locale === 'fr' && 'Rejoindre'}
-                </a>
+                  {joinLabel}
+                </Link>
               </li>
               <li>
                 <Link
-                  href={`${base}/sponsor-donate`}
+                  href={sponsorHref}
+                  target={siteConfig?.headerSponsorOpenInNewTab ? '_blank' : undefined}
+                  rel={siteConfig?.headerSponsorOpenInNewTab ? 'noopener noreferrer' : undefined}
                   onClick={() => setMenuOpen(false)}
                   className="block py-2 px-3 rounded-lg bg-accent text-white font-medium"
                 >
-                  {locale === 'de' && 'Sponsor / Spenden'}
-                  {locale === 'en' && 'Sponsor / Donate'}
-                  {locale === 'fr' && 'Sponsor / Don'}
+                  {sponsorLabel}
                 </Link>
               </li>
             </ul>
