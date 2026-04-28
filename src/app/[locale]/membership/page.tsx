@@ -1,5 +1,6 @@
 import type { Locale } from '@/i18n/config';
 import MembershipForm from '@/components/MembershipForm';
+import { prisma } from '@/lib/prisma';
 
 type Props = { params: Promise<{ locale: Locale }> };
 
@@ -44,13 +45,51 @@ const HERO: Record<Locale, { heading: string; sub: string }> = {
 
 export default async function MembershipPage({ params }: Props) {
   const { locale } = await params;
-  const hero = HERO[locale] ?? HERO.en;
+  const fallbackHero = HERO[locale] ?? HERO.en;
+  let hero = fallbackHero;
+  let heroBgUrl: string | null = null;
+
+  try {
+    const cfg = await prisma.siteConfig.findUnique({ where: { id: 'singleton' } });
+    if (cfg) {
+      const heading =
+        locale === 'fr'
+          ? cfg.membershipHeroHeadingFr
+          : locale === 'de'
+            ? cfg.membershipHeroHeadingDe
+            : cfg.membershipHeroHeadingEn;
+
+      const sub =
+        locale === 'fr'
+          ? cfg.membershipHeroSubFr
+          : locale === 'de'
+            ? cfg.membershipHeroSubDe
+            : cfg.membershipHeroSubEn;
+
+      hero = {
+        heading: heading?.trim() || fallbackHero.heading,
+        sub: sub?.trim() || fallbackHero.sub,
+      };
+
+      heroBgUrl = cfg.membershipHeroBgUrl?.trim() || null;
+    }
+  } catch {
+    hero = fallbackHero;
+  }
 
   return (
     <main>
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#110808] via-[#1a0a0a] to-[#0e0505] py-20 md:py-28">
-        <div className="mx-auto max-w-3xl px-6 text-center">
+        {heroBgUrl && (
+          <div
+            className="absolute inset-0 bg-cover bg-center opacity-35"
+            style={{ backgroundImage: `url(${heroBgUrl})` }}
+            aria-hidden
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#110808]/90 via-[#1a0a0a]/85 to-[#0e0505]/92" aria-hidden />
+        <div className="relative z-10 mx-auto max-w-3xl px-6 text-center">
           <p className="mb-3 text-[0.65rem] font-bold uppercase tracking-[0.35em] text-accent/60">
             Level Up in Germany
           </p>

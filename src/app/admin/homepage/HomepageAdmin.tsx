@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
+import SiteConfigAdmin from './SiteConfigAdmin';
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -887,7 +888,7 @@ function ButtonsAdmin() {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export default function HomepageAdmin() {
-  const [tab, setTab] = useState<'hero' | 'buttons'>('hero');
+  const [tab, setTab] = useState<'hero' | 'buttons' | 'site'>('hero');
 
   return (
     <div className="space-y-6">
@@ -907,10 +908,11 @@ export default function HomepageAdmin() {
         {[
           { key: 'hero', label: 'Images Hero', icon: '🖼️' },
           { key: 'buttons', label: 'Boutons CTA', icon: '🔘' },
+          { key: 'site', label: 'Header & Membership', icon: '⚙️' },
         ].map(({ key, label, icon }) => (
           <button
             key={key}
-            onClick={() => setTab(key as 'hero' | 'buttons')}
+            onClick={() => setTab(key as 'hero' | 'buttons' | 'site')}
             className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
               tab === key
                 ? 'bg-accent text-white shadow'
@@ -924,7 +926,7 @@ export default function HomepageAdmin() {
       </div>
 
       {/* Content */}
-      {tab === 'hero' ? <HeroAdmin /> : <ButtonsAdmin />}
+      {tab === 'hero' ? <HeroAdmin /> : tab === 'buttons' ? <ButtonsAdmin /> : <SiteConfigAdmin />}
     </div>
   );
 }

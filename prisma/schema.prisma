@@ -158,6 +158,32 @@ model HomeButton {
   @@map("home_buttons")
 }
 
+model SiteConfig {
+  id                      String   @id @default("singleton")
+  headerLogoUrl           String?  @map("header_logo_url")
+  headerJoinLabelFr       String?  @map("header_join_label_fr")
+  headerJoinLabelDe       String?  @map("header_join_label_de")
+  headerJoinLabelEn       String?  @map("header_join_label_en")
+  headerJoinLink          String?  @map("header_join_link")
+  headerJoinOpenInNewTab  Boolean  @default(false) @map("header_join_open_in_new_tab")
+  headerSponsorLabelFr    String?  @map("header_sponsor_label_fr")
+  headerSponsorLabelDe    String?  @map("header_sponsor_label_de")
+  headerSponsorLabelEn    String?  @map("header_sponsor_label_en")
+  headerSponsorLink       String?  @map("header_sponsor_link")
+  headerSponsorOpenInNewTab Boolean @default(false) @map("header_sponsor_open_in_new_tab")
+  membershipHeroHeadingFr String?  @map("membership_hero_heading_fr")
+  membershipHeroHeadingDe String?  @map("membership_hero_heading_de")
+  membershipHeroHeadingEn String?  @map("membership_hero_heading_en")
+  membershipHeroSubFr     String?  @map("membership_hero_sub_fr")
+  membershipHeroSubDe     String?  @map("membership_hero_sub_de")
+  membershipHeroSubEn     String?  @map("membership_hero_sub_en")
+  membershipHeroBgUrl     String?  @map("membership_hero_bg_url")
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+
+  @@map("site_config")
+}
+
 model BlogPost {
   id         String   @id @default(uuid())
   title      String
