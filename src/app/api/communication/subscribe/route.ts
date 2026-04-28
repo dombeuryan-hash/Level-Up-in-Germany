@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { parseNameFromEmail } from '@/lib/emailName';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -24,6 +25,8 @@ export async function POST(req: Request) {
     const eventId = typeof body.eventId === 'string' ? body.eventId.trim() : '';
     const email = normalizeEmail(body.email ?? '');
     const firstName = cleanFirstName(body.firstName);
+    const parsedName = parseNameFromEmail(email);
+    const effectiveFirstName = firstName ?? parsedName.firstName;
 
     if (!eventId) {
       return NextResponse.json({ ok: false, error: 'missing_event' }, { status: 400 });
@@ -52,7 +55,9 @@ export async function POST(req: Request) {
       },
       create: {
         email,
-        firstName,
+        firstName: effectiveFirstName,
+        lastName: parsedName.lastName,
+        name: parsedName.fullName,
         consent: true,
         source: `event_communication_${event.year}`,
         tags: `levelup_event,event_${event.year},communication_popup`,
@@ -67,13 +72,13 @@ export async function POST(req: Request) {
         },
       },
       update: {
-        firstName: firstName ?? undefined,
+        firstName: effectiveFirstName ?? undefined,
         subscriberId: subscriber.id,
       },
       create: {
         eventId,
         email,
-        firstName,
+        firstName: effectiveFirstName,
         subscriberId: subscriber.id,
       },
     });

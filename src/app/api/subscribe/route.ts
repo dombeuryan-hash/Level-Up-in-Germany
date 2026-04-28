@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { sendNewsletterPdfEmail } from '@/lib/sendNewsletterPdfEmail';
 import { EVENT_PDF_PATH, EVENT_SOURCE_LABEL, absolutePdfUrl } from '@/lib/event-pdf-config';
 import { checkSubscribeRateLimit } from '@/lib/subscribe-rate-limit';
+import { parseNameFromEmail } from '@/lib/emailName';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MIN_COMPLETION_MS = 600;
@@ -52,6 +53,7 @@ export async function POST(req: Request) {
     if (!email || !EMAIL_RE.test(email)) {
       return NextResponse.json({ ok: false, error: 'invalid_email' }, { status: 400 });
     }
+    const parsedName = parseNameFromEmail(email);
 
     const edition = typeof body.edition === 'string' && body.edition.trim() ? body.edition.trim() : '2025';
     const knownEdition = isKnownEdition(edition) ? edition : null;
@@ -86,6 +88,9 @@ export async function POST(req: Request) {
       await prisma.newsletterSubscriber.create({
         data: {
           email,
+          name: parsedName.fullName,
+          firstName: parsedName.firstName,
+          lastName: parsedName.lastName,
           source,
           consent,
           tags: 'levelup_event',
@@ -95,6 +100,15 @@ export async function POST(req: Request) {
       await prisma.newsletterSubscriber.update({
         where: { email },
         data: { consent: true },
+      });
+    } else if (!existing.firstName && !existing.lastName && parsedName.firstName) {
+      await prisma.newsletterSubscriber.update({
+        where: { email },
+        data: {
+          name: existing.name ?? parsedName.fullName,
+          firstName: parsedName.firstName,
+          lastName: parsedName.lastName,
+        },
       });
     }
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { randomUUID } from 'crypto';
+import { parseNameFromEmail } from '@/lib/emailName';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -53,18 +54,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Adresse email invalide' }, { status: 400 });
   }
 
+  const parsedName = parseNameFromEmail(emailLower);
+  const resolvedFirstName = firstName?.trim() || parsedName.firstName;
+  const resolvedLastName = lastName?.trim() || parsedName.lastName;
+
   const existing = await prisma.newsletterSubscriber.findUnique({ where: { email: emailLower } });
   if (existing) {
     return NextResponse.json({ error: 'Cet email est déjà inscrit' }, { status: 409 });
   }
 
-  const fullName = [firstName?.trim(), lastName?.trim()].filter(Boolean).join(' ') || null;
+  const fullName = [resolvedFirstName, resolvedLastName].filter(Boolean).join(' ') || null;
 
   const subscriber = await prisma.newsletterSubscriber.create({
     data: {
       email: emailLower,
-      firstName: firstName?.trim() || null,
-      lastName: lastName?.trim() || null,
+      firstName: resolvedFirstName,
+      lastName: resolvedLastName,
       address: address?.trim() || null,
       city: city?.trim() || null,
       name: fullName,
