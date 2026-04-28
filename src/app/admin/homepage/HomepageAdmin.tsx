@@ -157,10 +157,15 @@ function HeroAdmin() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const res = await fetch('/api/admin/hero');
-    const data = await res.json();
-    setSlides(data);
-    setLoading(false);
+    try {
+      const res = await fetch('/api/admin/hero');
+      const data = await res.json();
+      setSlides(Array.isArray(data) ? data : []);
+    } catch {
+      setSlides([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -524,10 +529,15 @@ function ButtonsAdmin() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const res = await fetch('/api/admin/buttons');
-    const data = await res.json();
-    setButtons(data);
-    setLoading(false);
+    try {
+      const res = await fetch('/api/admin/buttons');
+      const data = await res.json();
+      setButtons(Array.isArray(data) ? data : []);
+    } catch {
+      setButtons([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => { load(); }, [load]);

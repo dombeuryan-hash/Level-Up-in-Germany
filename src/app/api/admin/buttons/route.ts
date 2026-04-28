@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma';
 
 function isAdmin() {
   const cookieStore = cookies();
-  return cookieStore.get('admin_session')?.value === process.env.ADMIN_SECRET;
+  return cookieStore.get('admin_session')?.value === 'authenticated';
 }
 
 // GET /api/admin/buttons
