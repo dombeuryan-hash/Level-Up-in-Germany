@@ -33,8 +33,8 @@ export default async function LocaleHomePage({
   let dbHeroSubtitle: string | null = null;
 
   // ── DB-driven buttons ───────────────────────────────────────────────────────
-  let dbPrimaryButton: { label: string; href: string } | null = null;
-  let dbButtons: { label: string; href: string }[] = [];
+  let dbPrimaryButton: { label: string; href: string; colorVariant?: string } | null = null;
+  let dbButtons: { label: string; href: string; colorVariant?: string; openInNewTab?: boolean }[] = [];
   let hasDbButtons = false;
 
   try {
@@ -90,11 +90,13 @@ export default async function LocaleHomePage({
       if (primary) {
         const href =
           primary.linkType === 'internal' ? `${base}${primary.linkTarget}` : primary.linkTarget;
-        dbPrimaryButton = { label: primary[labelKey] || primary.labelEn, href };
+        dbPrimaryButton = { label: primary[labelKey] || primary.labelEn, href, colorVariant: primary.colorVariant };
       }
       dbButtons = rest.map((b) => ({
         label: b[labelKey] || b.labelEn,
         href: b.linkType === 'internal' ? `${base}${b.linkTarget}` : b.linkTarget,
+        colorVariant: b.colorVariant,
+        openInNewTab: b.openInNewTab,
       }));
     }
   } catch {

@@ -10,8 +10,8 @@ interface HeroCarouselProps {
   tagline?: string;
   subtitle?: string;
   autoplayInterval?: number;
-  primaryButton?: { label: string; href: string };
-  buttons?: { label: string; href: string }[];
+  primaryButton?: { label: string; href: string; colorVariant?: string };
+  buttons?: { label: string; href: string; colorVariant?: string; openInNewTab?: boolean }[];
   stats?: { value: number; suffix: string; label: string }[];
   images?: string[];
 }
@@ -22,6 +22,27 @@ function AnimatedHeroTitle({ title }: { title: string }) {
       {title}
     </span>
   );
+}
+
+// ── Button color variants (hero dark background context) ──────────────────────
+const BASE_BTN = 'group inline-flex items-center justify-center h-12 sm:h-14 px-8 rounded-full font-semibold hover:scale-[1.03] active:scale-[0.97] transition-all duration-200 text-sm sm:text-base';
+
+function heroBtnCls(variant: string): string {
+  switch (variant) {
+    case 'yellow':
+      return `${BASE_BTN} bg-accent text-white shadow-[0_4px_20px_rgba(233,140,11,0.30)] hover:bg-[#f5a020] hover:shadow-[0_6px_28px_rgba(233,140,11,0.45)]`;
+    case 'white':
+      return `${BASE_BTN} bg-white/[0.12] text-white backdrop-blur-md border border-white/25 shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:bg-white/95 hover:text-[#0f0606]`;
+    case 'black':
+      return `${BASE_BTN} bg-[#0f0606]/80 text-white border border-white/10 shadow-[0_4px_16px_rgba(0,0,0,0.3)] hover:bg-[#0f0606]`;
+    case 'outline-white':
+      return `${BASE_BTN} bg-transparent text-white border-2 border-white hover:bg-white hover:text-[#0f0606]`;
+    case 'outline-red':
+      return `${BASE_BTN} bg-transparent text-white border-2 border-[#8c1a1a] hover:bg-[#8c1a1a]`;
+    case 'red':
+    default:
+      return `${BASE_BTN} bg-primary text-white shadow-[0_4px_20px_rgba(140,26,26,0.35)] hover:bg-primary-light hover:shadow-[0_6px_28px_rgba(140,26,26,0.45)] gap-2`;
+  }
 }
 
 export default function HeroCarousel({
@@ -171,8 +192,7 @@ export default function HeroCarousel({
             <div className="animate-hero-buttons flex flex-wrap items-center gap-4 sm:gap-5">
               {primaryButton && (() => {
                 const isExternal = /^https?:\/\//i.test(primaryButton.href);
-                const cls =
-                  'group inline-flex items-center justify-center gap-2 h-12 sm:h-14 px-8 rounded-full bg-primary text-white font-semibold shadow-[0_4px_20px_rgba(140,26,26,0.35),0_1px_3px_rgba(0,0,0,0.2)] hover:bg-primary-light hover:shadow-[0_6px_28px_rgba(140,26,26,0.45),0_2px_6px_rgba(0,0,0,0.15)] hover:scale-[1.03] active:scale-[0.97] transition-all duration-200 text-sm sm:text-base';
+                const cls = heroBtnCls(primaryButton.colorVariant ?? 'red');
                 const inner = (
                   <>
                     {primaryButton.label}
@@ -185,22 +205,19 @@ export default function HeroCarousel({
                   <Link key="p" href={primaryButton.href} className={cls}>{inner}</Link>
                 );
               })()}
-              {buttons[0] && (
-                <Link
-                  href={buttons[0].href}
-                  className="inline-flex items-center justify-center h-12 sm:h-14 px-8 rounded-full bg-white/[0.12] text-white font-semibold backdrop-blur-md border border-white/25 shadow-[0_4px_16px_rgba(0,0,0,0.15)] hover:bg-white/95 hover:text-brand-dark hover:shadow-[0_6px_24px_rgba(0,0,0,0.12)] hover:scale-[1.03] active:scale-[0.97] transition-all duration-250 text-sm sm:text-base"
-                >
-                  {buttons[0].label}
-                </Link>
-              )}
-              {buttons[1] && (
-                <Link
-                  href={buttons[1].href}
-                  className="inline-flex items-center justify-center h-12 sm:h-14 px-8 rounded-full bg-accent text-white font-semibold shadow-[0_4px_20px_rgba(233,140,11,0.30),0_1px_3px_rgba(0,0,0,0.2)] hover:bg-accent-light hover:shadow-[0_6px_28px_rgba(233,140,11,0.40),0_2px_6px_rgba(0,0,0,0.12)] hover:scale-[1.03] active:scale-[0.97] transition-all duration-200 text-sm sm:text-base"
-                >
-                  {buttons[1].label}
-                </Link>
-              )}
+              {buttons.map((btn, i) => {
+                const isExternal = /^https?:\/\//i.test(btn.href);
+                const cls = heroBtnCls(btn.colorVariant ?? (i === 0 ? 'white' : 'yellow'));
+                return isExternal ? (
+                  <a key={i} href={btn.href} target={btn.openInNewTab ? '_blank' : undefined} rel="noopener noreferrer" className={cls}>
+                    {btn.label}
+                  </a>
+                ) : (
+                  <Link key={i} href={btn.href} className={cls}>
+                    {btn.label}
+                  </Link>
+                );
+              })}
             </div>
           )}
         </div>

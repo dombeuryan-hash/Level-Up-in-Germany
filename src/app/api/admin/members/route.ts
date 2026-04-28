@@ -9,11 +9,12 @@ export async function GET(req: NextRequest) {
   const where: Record<string, unknown> = {};
   if (status) where.applicationStatus = status;
   if (search) {
+    // SQLite does not support mode:'insensitive' — use plain contains (SQLite is case-insensitive by default for ASCII)
     where.OR = [
-      { email: { contains: search, mode: 'insensitive' } },
-      { firstName: { contains: search, mode: 'insensitive' } },
-      { lastName: { contains: search, mode: 'insensitive' } },
-      { activityDomain: { contains: search, mode: 'insensitive' } },
+      { email: { contains: search } },
+      { firstName: { contains: search } },
+      { lastName: { contains: search } },
+      { activityDomain: { contains: search } },
     ];
   }
 
